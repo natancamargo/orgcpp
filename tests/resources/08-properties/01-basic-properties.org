@@ -1,0 +1,4 @@
+:PROPERTIES:
+:Property1: "abc"
+:Property2: "cba"
+:END:

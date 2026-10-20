@@ -1,0 +1,35 @@
+#+begin_export ascii
+ascii
+#+end_export
+
+#+begin_center
+center
+#+end_center
+
+#+begin_comment
+comment
+#+end_comment
+
+#+begin_example
+example
+#+end_example
+
+#+begin_export html
+html
+#+end_export
+
+#+begin_quote
+quote
+#+end_quote
+
+#+begin_src c++
+src
+#+end_src
+
+#+begin_verse
+verse
+#+end_verse
+
+#+begin_custom
+custom
+#+end_custom

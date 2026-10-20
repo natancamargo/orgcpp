@@ -1,0 +1,305 @@
+#+title: org-to-anki
+#+author: natan
+#+STARTUP: indent
+#+TODO: TODO DOING CANCELED | DONE
+#+OPTIONS: H:2
+
+* DONE Setup the project
+** DONE Setup the project
+** DONE Setup vcpkg
+* DONE Define all elements parseable 
+** Headline
+#+begin_example
+\* Headline text
+Body text
+#+end_example
+*** Headline with todo
+#+begin_example
+\* TODO Headline text
+Body text
+
+Defined by:
+#+TODO: TODO DOING CANCELED | DONE
+#+end_example
+*** Headline with priority
+#+begin_example
+\* [#A] Headline text
+Body text
+
+Defined by:
+#+PRIORITIES: A C B
+#+end_example
+*** Headline with progress
+#+begin_example
+\* Headline text [2/4]
+#+end_example
+** Checkbox
+#+begin_example
+[ ] Peter
+#+end_example
+** Drawer
+#+begin_example
+:DRAWER TEXT:
+Body text
+:END:
+#+end_example
+** Blocks
+#+begin_example
+#+STARTUP: hideblocks
+
+#+begin_example
+...
+#+end_example
+#+end_example
+** Table
+#+begin_example
+| A | B |
+| a | b |
+#+end_example
+** Link
+#+begin_example
+\[\[LINK\]\[DESCRIPTION\]\]
+or
+\[\[LINK\]\]
+#+end_example
+** ListItem
+#+begin_example
+- ListItem text
+  Body text
+#+end_example
+** Properties
+#+begin_example
+:PROPERTIES:
+:NDisks_ALL:  1 2 3 4
+:Publisher_ALL: "Deutsche Grammophon" Philips EMI
+:END:
+
+Inline:
+#+PROPERTY: NDisks_ALL 1 2 3 4
+
+Increment property:
+#+PROPERTY: var  foo
+#+PROPERTY: var+ bar
+
+Inheritance:
+\* CD collection
+\*\* Classic
+:PROPERTIES:
+:Genres: Classic
+:END:
+\*\*\* Goldberg Variations
+:PROPERTIES:
+:Title:     Goldberg Variations
+:Composer:  J.S. Bach
+:Artist:    Glenn Gould
+:Publisher: Deutsche Grammophon
+:NDisks:    1
+:Genres+:   Baroque
+:Genres+:   Keyboard music
+:END:
+
+#+end_example
+** Tags
+#+begin_example
+\* Meeting with the French group       :work:
+\*\* Summary by Frank                  :boss:notes:
+\*\*\* TODO Prepare slides for him     :action:
+
+Predefined tags:
+#+FILETAGS: :Peter:Boss:Secret:
+
+Hierarchy:
+#+TAGS: [ GTD : Control Persp ]
+#+TAGS: [ Control : Context Task ]
+#+TAGS: [ Persp : Vision Goal AOF Project ]
+#+end_example
+** Dates and times
+*** Timestamps
+#+begin_example
+\* Meet Peter at the movies
+  <2006-11-01 Wed 19:15>
+\* Discussion on climate change
+  <2006-11-02 Thu 10:00-12:00>
+\* My days off
+  <2006-11-03 Fri>
+  <2006-11-06 Mon>
+#+end_example
+*** Deadlines and Scheduling
+#+begin_example
+\* TODO write article about the Earth for the Guide
+    DEADLINE: <2004-02-29 Sun>
+    The editor in charge is [[bbdb:Ford Prefect
+]]
+\* TODO Call Trillian for a date on New Years Eve.
+    SCHEDULED: <2004-12-25 Sat>
+#+end_example
+** Text
+#+begin_example
+*bold*
+
+/italic/
+
+_italic_
+
+=verbatim=
+
+~code~
+
++strike-through+
+#+end_example
+** Latex
+#+begin_example
+\begin{equation}                        % arbitrary environments,
+x=\sqrt{b}                              % even tables, figures, etc
+\end{equation}
+
+$a^2=b$
+
+\( b=2 \)
+
+$$ a=+\sqrt{2} $$ or \[ a=-\sqrt{2} \]
+#+end_example
+** Foot note
+#+begin_example
+[fn:text]
+
+[fn:text:definition]
+#+end_example
+* DONE Define the classes and the usage
+** DONE Classes
+#+begin_src c++
+  class Element{}
+    class Elements{}: public Element, public vector<Element> {};
+
+  class Text: public Element {};
+
+  class Headline: public Element {};
+
+  class Drawer: public Element {};
+
+  class Block: public Element {};
+
+  class Table: public Element {};
+
+  class Link: public Element {};
+
+  class ListItem: public Element {};
+
+  class Properties: public Element, public vector<Property> {};
+  class Property: public Element {};
+
+  class Tags: public Element, public vector<Tag> {};
+  class Tag: public Element {};
+
+  class Timestamp: public Element {};
+  class Deadline: public Element {};
+  class Scheduled: public Element {};
+
+  class Checkbox {};
+  class Progress {};
+#+end_src
+** DONE Parse api
+#+begin_src c++
+  orgcpp::RootElement root = orgcpp::parse("filename.org");
+#+end_src
+** DONE Element api
+#+begin_src c++
+  orgcpp::RootElement root = orgcpp::parse("filename.org");
+  orgcpp::Elements children = root.children();
+  // iterate child
+  for(orgcpp::Element child: children) {
+    //...
+   }
+
+  // get by index
+  orgcpp::Element child = children.get(0);
+
+  // check type
+  orgcpp::Headline child;
+  child.getType() == orgcpp::Type::Headline; // true
+
+  // head and body text
+  child.head(); // head text of the element
+  child.body(); // body text of the element
+#+end_src
+** DONE Find api
+#+begin_src c++
+  // find one by type
+  orgcpp::Element specificChild = children.findOneByType<Headline>();
+
+  // find all by type
+  orgcpp::Elements specificChildren = children.findAllByType<ListItem>();
+#+end_src
+** DONE Traverse api
+#+begin_src c++
+  orgcpp::Element child = children.get(0);
+  orgcpp::traverse(child, []() {
+    if (child.getType() == orgcpp::Type::Headline) {
+      // ...
+    }
+   });
+  child.traverse([](){/*...*/});
+#+end_src
+** DONE Serialize
+#+begin_src c++
+  orgcpp::RootElement root;
+  root
+  .children()
+  .addElement(Headline{"Headline", "Text"});
+  orgcpp::serialize(root);
+#+end_src
+* DONE Define all the parse works
+- Buffer of characters
+- Get line loop
+- Matchers
+  Return boolean and optionaly an element
+  If no partial match is occurring, false and false
+  if partial match is occurring, true and false
+  If full match, true and true
+- Use the matched characters to instantiate an element
+- Go to the next element
+* DONE Define tests
+** headline
+- basic headline
+- combined headlines
+- headline with todo
+- headline with priority
+** Checkbox
+- checkbox with headline
+- checkbox with listitem
+- checkbox with
+** Drawer
+- basic drawer
+- inserted drawer
+** Block
+- inline block
+- multline block
+** Table
+- basic table
+- table.el
+** Link
+- basic link
+** List item
+- basic list item
+- nested list item
+** Properties
+- basic properties
+- inline property
+- inherit properties
+** Tags
+- basic tags
+- inline tags
+** Dates
+- basic timestmp
+- deadline
+- scheduled
+** Text
+- variants
+** Latex
+- basic latex
+- inline latex
+** Footnote
+- basic footnote
+* Code tests
+* Code the classes and the usage
+* Code the parser

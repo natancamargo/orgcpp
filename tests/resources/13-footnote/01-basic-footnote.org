@@ -1,0 +1,5 @@
+[fn:text]
+
+[fn:: This is the inline definition of this footnote]
+
+[fn:text: definition]
