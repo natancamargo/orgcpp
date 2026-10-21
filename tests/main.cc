@@ -10,8 +10,8 @@ TEST_CASE("headline parsing should work properly", "[orgcpp][headline]") {
     Headline *headline = root.getChildren()->get<Headline>(0);
     REQUIRE(headline);
     if (headline) {
-      REQUIRE(headline->getHead() == "Headline");
-      REQUIRE(headline->getBody() == "Text");
+      REQUIRE(headline->getAttribute("head") == "Headline");
+      REQUIRE(headline->getAttribute("body") == "Text");
     }
   }
 }

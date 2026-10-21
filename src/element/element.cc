@@ -22,23 +22,27 @@ Elements *Element::findAllByType(Type type) {
   Elements *elements;
   traverse([&elements, &type](Element *_element) {
     if (type == _element->getType()) {
-      elements->addChild(_element);      
+      elements->addChild(_element);
       return false;
     }
     return true;
   });
-  return elements;  
+  return elements;
 }
 
-const std::string Element::getHead() const {
-  return _readableHeadRegion.read(_document);
+const std::map<std::string, Region> &Element::getReadableAttributes() const {
+  return _readableAttributes;
 }
-void Element::setHead(const std::string &head) { _writetableHead = head; }
-
-const std::string Element::getBody() const {
-  return _readableBodyRegion.read(_document);
+const std::map<std::string, std::string> &
+Element::getWritableAttributes() const {
+  return _writableAttributes;
 }
-void Element::setBody(const std::string &body) { _writetableBody = body; }
+void Element::setReadableAttribute(std::string key, Region value) {
+  _readableAttributes[key] = value;
+}
+void Element::setWritableAttribute(std::string key, std::string value) {
+  _writableAttributes[key] = value;
+}
 
 std::ifstream *Element::getDocument() const { return _document; }
 
@@ -48,6 +52,9 @@ Elements *Element::getChildren() const { return _children; }
 
 const Type Element::getType() const { return _type; }
 void Element::setType(const Type type) { _type = type; }
+
+const Mode Element::getMode() const { return _mode; }
+void Element::setMode(const Mode mode) { _mode = mode; }
 
 void Element::traverse(TraverseFunction traverseFunc) {
   traverse(this, traverseFunc);
