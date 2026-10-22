@@ -35,12 +35,22 @@ find_package(Catch2 CONFIG REQUIRED)
 # ----------------------------------------------------------------------------------------
 set(LIBRARY_NAME orgcpp)
 add_library(${LIBRARY_NAME} STATIC
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/attribute/attribute.cc"
+
   "${CMAKE_CURRENT_SOURCE_DIR}/src/orgcpp/orgcpp.cc"
 
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/element/checkbox.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/element.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/elements.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/root-element.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/headline.cc"
+
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/matcher/headline-matcher.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/matcher/matcher.cc"
+
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/headline-parser.cc"
+
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/region/region.cc"
 )
 target_link_libraries(${LIBRARY_NAME} PUBLIC)
 target_include_directories(${LIBRARY_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -75,3 +85,9 @@ configure_file(
 )
 target_include_directories(${LIBRARY_NAME} PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 
+# copy resources
+# ----------------------------------------------------------------------------------------
+add_custom_command(
+  TARGET ${TEST_NAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/tests/resources ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}/resources
+)

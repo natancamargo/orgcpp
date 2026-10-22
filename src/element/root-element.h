@@ -2,5 +2,9 @@
 
 #include "element/element.h"
 namespace orgcpp {
-class RootElement : public Element {};
+class RootElement : public Element {
+public:
+  RootElement();
+  ~RootElement();
+};
 } // namespace orgcpp

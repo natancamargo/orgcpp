@@ -6,12 +6,12 @@ using namespace orgcpp;
 
 TEST_CASE("headline parsing should work properly", "[orgcpp][headline]") {
   SECTION("when parsing a basic headline", "[basic]") {
-    RootElement root = orgcpp::parse("./resources/01-basic-headline.org");
+    RootElement root = orgcpp::parse("./resources/01-headline/01-basic-headline.org");
     Headline *headline = root.getChildren()->get<Headline>(0);
     REQUIRE(headline);
     if (headline) {
-      REQUIRE(headline->getAttribute("head") == "Headline");
-      REQUIRE(headline->getAttribute("body") == "Text");
+      REQUIRE(headline->getAttribute<std::string>("head") == "Headline");
+      REQUIRE(headline->getAttribute<std::string>("body") == "Text");
     }
   }
 }

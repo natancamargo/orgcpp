@@ -10,13 +10,7 @@ Element *Elements::get(std::size_t index) const {
     return nullptr;
   }
 }
-template <typename T> T *Elements::get(std::size_t index) const {
-  Element *element = get(index);
-  if (element) {
-    return dynamic_cast<Element *>(element);
-  }
-  return std::nullopt;
-}
+
 const std::vector<Element *> &Elements::getElements() const {
   return _elements;
 }
