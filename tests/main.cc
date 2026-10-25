@@ -6,12 +6,55 @@ using namespace orgcpp;
 
 TEST_CASE("headline parsing should work properly", "[orgcpp][headline]") {
   SECTION("when parsing a basic headline", "[basic]") {
-    RootElement root = orgcpp::parse("./resources/01-headline/01-basic-headline.org");
-    Headline *headline = root.getChildren()->get<Headline>(0);
+    RootElement root =
+        orgcpp::parse("./resources/01-headline/01-basic-headline.org");
+    Headline *headline = root.get<Headline>(0);
     REQUIRE(headline);
-    if (headline) {
-      REQUIRE(headline->getAttribute<std::string>("head") == "Headline");
-      REQUIRE(headline->getAttribute<std::string>("body") == "Text");
-    }
+    std::string head = headline->getAttribute<Region>("head").value().string();
+    REQUIRE(head == "Headline");
+    std::string body = headline->getAttribute<Region>("body").value().string();
+    REQUIRE(body == "Text");
+    int level = headline->getAttribute<int>("level").value();
+    REQUIRE(level == 1);
+  }
+  SECTION("when parsing a combined headline", "[combined]") {
+    RootElement root =
+        orgcpp::parse("./resources/01-headline/02-combined-headline.org");
+    Headline *headline1 = root.get<Headline>(0);
+    Headline *headline2 = root.get<Headline>(1);
+    Headline *headline3 = root.get<Headline>(2);
+    Headline *headline4 = root.get<Headline>(4);
+
+    REQUIRE(headline1);
+    std::string head1 =
+        headline1->getAttribute<Region>("head").value().string();
+    REQUIRE(head1 == "Headline 1");
+    std::string body1 =
+        headline1->getAttribute<Region>("body").value().string();
+    REQUIRE(body1 == "Text 1\n- ListItem 1");
+    int level1 = headline1->getAttribute<int>("level").value();
+    REQUIRE(level1 == 1);
+
+    REQUIRE(headline2);
+    std::string head2 =
+        headline2->getAttribute<Region>("head").value().string();
+    REQUIRE(head2 == "Headline 2");
+    std::string body2 =
+        headline2->getAttribute<Region>("body").value().string();
+    REQUIRE(body2 == "- ListItem 2\n");
+    int level2 = headline2->getAttribute<int>("level").value();
+    REQUIRE(level2 == 2);
+
+    REQUIRE(headline3);
+    std::string head3 =
+        headline3->getAttribute<Region>("head").value().string();
+    REQUIRE(head3 == "Headline 3");
+    std::string body3 =
+        headline3->getAttribute<Region>("body").value().string();
+    REQUIRE(body3 == "Text 2");
+    int level3 = headline3->getAttribute<int>("level").value();
+    REQUIRE(level3 == 1);
+
+    REQUIRE(headline4 == nullptr);    
   }
 }

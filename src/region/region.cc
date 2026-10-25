@@ -1,5 +1,6 @@
 #include "region/region.h"
 #include <fstream>
+#include <iostream>
 #include <memory>
 #include <string>
 namespace orgcpp {
@@ -12,5 +13,13 @@ void Region::setDocument(std::shared_ptr<std::ifstream> document) {
   _document = document;
 }
 
-const std::string Region::read() const { return ""; }
+const std::string Region::read() const {
+  _document->clear();  
+  _document->seekg(first);
+  std::string content;
+  content.resize(second - first);
+  _document->read(content.data(), second - first);
+  return content;
+}
+const std::string Region::string() const { return read(); }
 } // namespace orgcpp

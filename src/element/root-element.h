@@ -4,7 +4,6 @@
 namespace orgcpp {
 class RootElement : public Element {
 public:
-  RootElement();
-  ~RootElement();
+
 };
 } // namespace orgcpp

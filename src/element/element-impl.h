@@ -3,7 +3,8 @@
 #include "attribute/attribute.h"
 #include "element/element.h"
 namespace orgcpp {
-template <typename T> std::optional<T> Element::getAttribute(const std::string &name) {
+template <typename T>
+std::optional<T> Element::getAttribute(const std::string &name) {
   try {
     Attribute attribute = _attributes.at(name);
     return std::get<T>(attribute.getValue());
@@ -12,5 +13,9 @@ template <typename T> std::optional<T> Element::getAttribute(const std::string &
   } catch (const std::bad_variant_access &ex) {
     return std::nullopt;
   }
+}
+template <typename T> T *Element::get(std::size_t index) const {
+  Element *element = get(index);
+  return dynamic_cast<T *>(element);
 }
 } // namespace orgcpp

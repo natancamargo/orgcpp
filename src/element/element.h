@@ -23,7 +23,6 @@ enum class Type {
   LATEX,
   FOOTNOTE
 };
-class Elements;
 class Element {
 public:
   using TraverseFunction = std::function<bool(Element *_element)>;
@@ -31,29 +30,38 @@ public:
   virtual ~Element() = default;
 
   Element *findOneByType(Type type);
-  Elements *findAllByType(Type type);
+  std::vector<Element *> findAllByType(Type type);
 
   std::shared_ptr<std::ifstream> getDocument() const;
   void setDocument(std::shared_ptr<std::ifstream> document);
-  
+
   const std::map<std::string, Attribute> &getAttributes() const;
-  void setAttribute(const std::string& name, const AttributeValue &value);
-  template <typename T> std::optional<T> getAttribute(const std::string& name);
+  void setAttribute(const std::string &name, const AttributeValue &value);
+  template <typename T> std::optional<T> getAttribute(const std::string &name);
 
   Element *getParent() const;
+  void setParent(Element *parent);
 
-  Elements *getChildren() const;
+  std::vector<Element*> getChildren() const;
 
   const Type getType() const;
   void setType(const Type type);
 
   void traverse(TraverseFunction traverseFunc);
-  static void traverse(Element *element, TraverseFunction traverseFunc);  
+  static void traverse(Element *element,
+                       TraverseFunction traverseFunc);
+
+  Element *get(std::size_t index) const;
+  template <typename T> T *get(std::size_t index) const;
+
+  void addChild(Element *element);
+  void removeChild(Element *element);
+
 protected:
   std::shared_ptr<std::ifstream> _document;
   std::map<std::string, Attribute> _attributes;
   Element *_parent;
-  Elements *_children;
+  std::vector<Element *> _children;
   Type _type;
 };
 } // namespace orgcpp

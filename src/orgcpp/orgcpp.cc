@@ -1,6 +1,9 @@
 #include "orgcpp/orgcpp.h"
+#include "config/config.h"
 #include "element/root-element.h"
 #include "matcher/headline-matcher.h"
+#include "matcher/matcher-impl.h"
+#include "matcher/matcher.h"
 
 #include <cstddef>
 #include <format>
@@ -10,8 +13,7 @@
 #include <ostream>
 #include <string>
 #include <tuple>
-
-#define BLOCKSIZE 16 * 1024
+#include <vector>
 
 namespace orgcpp {
 Error error = Error::NONE;
@@ -34,12 +36,32 @@ RootElement parse(std::string path) {
 
   // loop file
   std::size_t cursor = 0;
+  const int blockSize = config::blockSize;
   bool readResult = readFileByBlocks(
-      root.getDocument(), BLOCKSIZE,
-      [&cursor, &headlineMatcher, &root](char *buffer) {
-        std::string bufferAsString = std::string{buffer, buffer + BLOCKSIZE};
+      root.getDocument(), blockSize,
+      [&cursor, &headlineMatcher, &root, blockSize](char *buffer) {
+        std::string bufferAsString = std::string{buffer, buffer + blockSize};
+        std::vector<Match<Element>> unsortedMatches;
+
+        // match
         headlineMatcher.match(root.getDocument(), bufferAsString, cursor);
-        cursor += BLOCKSIZE;
+        if (headlineMatcher.getMatches().size() > 0) {
+          for (Match<Headline> match : headlineMatcher.getMatches()) {
+            if (std::get<0>(match) == MatchType::FULL) {
+              unsortedMatches.push_back(match);
+            }
+          }
+        }
+
+        // process matches into elements
+        std::vector<Element*> elements = processMatches(unsortedMatches);
+
+        // populate root
+        for (Element *element : elements) {
+          root.addChild(element);
+        }
+
+        cursor += blockSize;
       });
 
   if (!readResult) {
@@ -47,7 +69,7 @@ RootElement parse(std::string path) {
     std::cout << "parse: failed." << std::endl;
   }
 
-  std::cout << "parse: done.";
+  std::cout << "parse: done." << std::endl;
 
   return root;
 }
@@ -79,5 +101,14 @@ bool readFileByBlocks(std::shared_ptr<std::ifstream> in, std::size_t blockSize,
   }
 
   return true;
+}
+std::vector<Element *>
+processMatches(std::vector<Match<Element>> unsortedMatches) {
+  std::vector<Element *> sortedElements;
+  for (Match<Element> match : unsortedMatches) {
+    Element *element = std::get<2>(match);
+    sortedElements.push_back(element);
+  }
+  return sortedElements;
 }
 } // namespace orgcpp

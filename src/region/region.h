@@ -7,8 +7,10 @@
 namespace orgcpp {
 class Region : public std::pair<std::size_t, std::size_t> {
 public:
+  Region() = default;
   Region(const std::size_t x, const std::size_t y);
   const std::string read() const;
+  const std::string string() const;
 
   std::shared_ptr<std::ifstream> getDocument() const;
   void setDocument(std::shared_ptr<std::ifstream> document);

@@ -1,43 +1,94 @@
-
 #include "matcher/headline-matcher.h"
-#include "element/element.h"
+#include "allocator/allocator-impl.h"
 #include "element/headline.h"
+#include "matcher/matcher.h"
 #include <cstddef>
+#include <functional>
 #include <iostream>
-#include <ostream>
-#include <regex>
+#include <string>
 
 namespace orgcpp {
-HeadlineMatcher::HeadlineMatcher() {
-  _regex = "(^\\*+)\\s+([^\n]+)(\n(.+))?";
-}
-  void HeadlineMatcher::match(std::shared_ptr<std::ifstream> in, const std::string &buffer, std::size_t cursor) {
-  std::sregex_iterator sregexBegin =
-      std::sregex_iterator(buffer.begin(), buffer.end(), _regex);
-  std::sregex_iterator sregexEnd = std::sregex_iterator();
-  bool hasMatchs = std::distance(sregexBegin, sregexEnd) > 0;
-  for (std::sregex_iterator i = sregexBegin; i != sregexEnd; ++i) {
-    std::smatch match = *i;
-    std::string match_str = match.str();
-    std::size_t innerCursor = cursor + match.position();
+void HeadlineMatcher::match(std::shared_ptr<std::ifstream> in,
+                            const std::string &buffer, std::size_t cursor) {
 
-    // Empty headline
-    Headline headline;
+  std::size_t innerCursor = cursor;
+  bool found = false;
+  std::size_t numberOfWildcards, numberOfSpaces = 0;
+  Region region;
+  region.setDocument(in);
+  MatchType matchType = MatchType::NONE;
+  Headline *headline;
+  std::function<bool(char)> isNULL = [](char c) { return c == 0x00; };
+  for (std::size_t i = 0; i < buffer.size(); i = (innerCursor - cursor)) {
+    if (isNULL(buffer[i])) {
+      break;
+    }
+    if (buffer[i] == '*') {
+      bool atBegin = i == 0;
+      bool afterLF = i > 0 && buffer[i - 1] == '\n';
+      if (atBegin || afterLF) {
+        found = true;
+        numberOfWildcards = 1;
+        numberOfSpaces = 0;        
+        matchType = MatchType::PARTIAL;
+        region.first = innerCursor;
+        headline = allocator::allocate<Headline>();
+        headline->setDocument(in);
+      }
+    }
+    if (found) {
+      std::size_t j = i + 1;
+      while (j < buffer.size() && !isNULL(buffer[j]) &&
+             (buffer[j] == '*' || buffer[j] == ' ')) {
+        if (buffer[j] == '*') {
+          numberOfWildcards++;
+        }
+        if (buffer[j] == ' ') {
+          numberOfSpaces++;          
+        }          
+        innerCursor++;
+        j++;
+      }
+      bool validPreHead = numberOfSpaces > 0 && numberOfWildcards > 0;
+      bool foundHead = validPreHead && !isNULL(buffer[j]) && buffer[j] != '\n';      
+      if (foundHead) {
+        headline->setAttribute("level", static_cast<int>(numberOfWildcards));
+        Region headRegion;
+        headRegion.setDocument(in);
+        headRegion.first = ++innerCursor;
+        while (!isNULL(buffer[j]) && j < buffer.size() && (buffer[j] != '\n')) {
+          innerCursor++;
+          j++;
+        }
+        headRegion.second = innerCursor;
+        headline->setAttribute("head", headRegion);
+        matchType = MatchType::FULL;
+      }
+      bool foundBody = validPreHead && !isNULL(buffer[j]) && buffer[j] == '\n';            
+      if (foundBody) {
+        std::size_t k = j + 1;
+        Region bodyRegion;
+        bodyRegion.setDocument(in);
+        bodyRegion.first = ++innerCursor;
+        while (!isNULL(buffer[k]) && (k < buffer.size() - 2) &&
+               !((buffer[k + 1] == '\n') && (buffer[k + 2] == '*'))) {
+          innerCursor++;
+          k++;
+        }
+        if (isNULL(buffer[k]) || k == buffer.size()) {
+          bodyRegion.second = innerCursor - 1;
+        } else {
+          bodyRegion.second = ++innerCursor;
+        }
+        headline->setAttribute("body", bodyRegion);
+      }
 
-    // first group (* asterisks)
-    std::sub_match subMatch1 = match[1];
-    //std::cout << subMatch.str() << std::endl;
-    Region region1 = {innerCursor, innerCursor + subMatch1.length()};
-    headline.setAttribute("before", region1);
-    headline.setAttribute("level", static_cast<int>(subMatch1.length()));
-    innerCursor += subMatch1.length();
-
-    // second group (* title)
-    std::sub_match subMatch2 = match[2];
-    std::cout << subMatch2.str() << std::endl;
-    Region region2 = {innerCursor, innerCursor + subMatch2.length()};
-    headline.setAttribute("head", region2);
-    innerCursor += subMatch2.length();
+      region.second = innerCursor;
+      Match<Headline> match{matchType, region, headline};
+      _matches.push_back(match);
+      found = false;
+    }
+    innerCursor++;
   }
 }
 } // namespace orgcpp

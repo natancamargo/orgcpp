@@ -11,5 +11,8 @@ constexpr std::string_view project_version = "@PROJECT_VERSION@";
 constexpr std::int32_t project_version_major{@PROJECT_VERSION_MAJOR@};
 constexpr std::int32_t project_version_minor{@PROJECT_VERSION_MINOR@};
 constexpr std::int32_t project_version_patch{@PROJECT_VERSION_PATCH@};
+
+// Size of the block/chunk of file read by time
+inline int blockSize = 64 * 1024;
 } // namespace config
 } // namespace orgToAnki
