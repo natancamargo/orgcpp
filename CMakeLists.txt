@@ -70,7 +70,7 @@ set_property(TARGET ${EXECUTABLE_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY $<
 set(TEST_NAME "orgcpp-unit-tests")
 
 add_executable(${TEST_NAME}
-  "${CMAKE_CURRENT_SOURCE_DIR}/tests/main.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/tests/01-headline.cc"
 )
 target_link_libraries(${TEST_NAME} PUBLIC ${LIBRARY_NAME} Catch2::Catch2WithMain)
 set_target_properties(${TEST_NAME} PROPERTIES

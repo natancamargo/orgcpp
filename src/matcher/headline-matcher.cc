@@ -2,6 +2,7 @@
 #include "allocator/allocator-impl.h"
 #include "element/headline.h"
 #include "matcher/matcher.h"
+#include "util/string.h"
 #include <cstddef>
 #include <functional>
 #include <iostream>
@@ -12,14 +13,14 @@ void HeadlineMatcher::match(std::shared_ptr<std::ifstream> in,
                             const std::string &buffer, std::size_t cursor) {
 
   std::size_t innerCursor = cursor;
-  bool found = false;
-  int numberOfWildcards, numberOfSpaces = 0;
-  Region region;
-  region.setDocument(in);
-  MatchType matchType = MatchType::NONE;
-  Headline *headline;
   std::function<bool(char)> isNULL = [](char c) { return c == 0x00; };
   for (std::size_t i = 0; i < buffer.size(); i = (innerCursor - cursor)) {
+    bool found = false;
+    Region region;
+    region.setDocument(in);
+    MatchType matchType = MatchType::NONE;
+    Headline *headline;
+    int numberOfWildcards, numberOfSpaces = 0;
     if (buffer[i] == '*') {
       bool atBegin = i == 0;
       bool afterLF = i > 0 && buffer[i - 1] == '\n';
@@ -47,50 +48,61 @@ void HeadlineMatcher::match(std::shared_ptr<std::ifstream> in,
       }
       bool validPreHead = numberOfSpaces > 0 && numberOfWildcards > 0;
       bool foundHead = validPreHead && buffer[j] != '\n';
+      if (!foundHead) {
+        innerCursor++;
+        continue;        
+      }
       if (foundHead) {
+        std::cout << "xxxxxxx headline xxxxxxx" << std::endl;
         headline->setAttribute("level", numberOfWildcards);
         Region headRegion;
         headRegion.setDocument(in);
         headRegion.first = ++innerCursor;
+        std::cout << "======= head =======" << std::endl;
         while (j < buffer.size() && (buffer[j] != '\n')) {
+          std::cout << buffer[j];
           innerCursor++;
           j++;
         }
         headRegion.second = innerCursor;
         headline->setAttribute("head", headRegion);
         matchType = MatchType::FULL;
+        std::cout << std::endl << "====================" << std::endl;        
       }
       std::size_t savedInnerCursor = 0;
       bool foundBody = foundHead && buffer[j] == '\n';
       if (foundBody) {
-        std::size_t k = j + 1;
         Region bodyRegion;
         bodyRegion.setDocument(in);
-        bodyRegion.first = ++innerCursor;
-        while (k < buffer.size()) {
-          bool foundAnotherHeadline = k <= (buffer.size() - 2) &&
-                                      (buffer[k + 1] == '\n') &&
-                                      (buffer[k + 2] == '*');
+        bodyRegion.first = innerCursor + 1;
+        std::cout << "~~~~~~~ body ~~~~~~~";
+        while (j < buffer.size()) {
+          bool foundAnotherHeadline =
+              (j <= (buffer.size() - 1) && (buffer[j] == '\n') &&
+               (buffer[j + 1] == '*'));
+          std::cout << buffer[j];
           if (foundAnotherHeadline) {
-            std::size_t l = k + 2;
+            std::size_t k = j + 1;
             int anotherHeadlineLevel = 0;
-            while (l < buffer.size() && buffer[l] == '*') {
+            while (k < buffer.size() && buffer[k] == '*') {
               anotherHeadlineLevel++;
-              l++;
+              k++;
             }
             if (numberOfWildcards >= anotherHeadlineLevel) {
-              innerCursor++;
+              innerCursor++;              
               break;
             } else if (!savedInnerCursor) {
+              std::cout << "^";
               savedInnerCursor = innerCursor;
             }
           }
           innerCursor++;
-          k++;
+          j++;
         }
         bodyRegion.second = innerCursor;
         region.second = innerCursor;
         headline->setAttribute("body", bodyRegion);
+                std::cout << std::endl << "~~~~~~~~~~~~~~~~~~~~" << std::endl;        
       }
 
       if (!foundBody) {
@@ -102,10 +114,12 @@ void HeadlineMatcher::match(std::shared_ptr<std::ifstream> in,
       Match<Headline> match{matchType, headline};
       _matches.push_back(match);
 
-      found = false;
       if (savedInnerCursor) {
+        std::cout << "^^" << std::endl;
         innerCursor = savedInnerCursor;
       }
+      std::cout << "xxxxxxxxxxxxxxxxxxxxxxxx" << std::endl;
+      continue;      
     }
     innerCursor++;
   }

@@ -1,14 +1,15 @@
-#include "allocator/allocator.h"
-#include "allocator/allocator-impl.h"
 #include "orgcpp/orgcpp.h"
+#include "allocator/allocator-impl.h"
+#include "allocator/allocator.h"
 #include "config/config.h"
-#include "util/string.h"
 #include "element/root-element.h"
 #include "matcher/headline-matcher.h"
 #include "matcher/matcher-impl.h"
 #include "matcher/matcher.h"
+#include "util/string.h"
 
 #include <cstddef>
+#include <filesystem>
 #include <format>
 #include <fstream>
 #include <functional>
@@ -24,6 +25,9 @@ Error error = Error::NONE;
 RootElement *parse(std::string path) {
   error = Error::NONE;
   std::cout << "parse: started." << std::endl;
+  std::cout << std::format("******* {} *******",
+                           std::filesystem::path{path}.filename().string())
+            << std::endl;
   RootElement *root = allocator::allocate<RootElement>();
 
   // matchersq
@@ -44,7 +48,8 @@ RootElement *parse(std::string path) {
   bool readResult = readFileByBlocks(
       root->getDocument(), blockSize,
       [&cursor, &headlineMatcher, &root, blockSize](char *buffer) {
-        std::string bufferAsString = nullTerminatedCharArrayToString(buffer, blockSize);
+        std::string bufferAsString =
+            nullTerminatedCharArrayToString(buffer, blockSize);
         std::vector<Match<Element>> treeFreeMatches;
 
         // match
@@ -73,6 +78,7 @@ RootElement *parse(std::string path) {
     std::cout << "parse: failed." << std::endl;
   }
 
+  std::cout << "*********************" << std::endl;
   std::cout << "parse: done." << std::endl;
 
   return root;
