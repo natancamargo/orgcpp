@@ -6,24 +6,27 @@ using namespace orgcpp;
 
 TEST_CASE("headline parsing should work properly", "[orgcpp][headline]") {
   SECTION("when parsing a basic headline", "[basic]") {
-    RootElement root =
+    RootElement *root =
         orgcpp::parse("./resources/01-headline/01-basic-headline.org");
-    Headline *headline = root.get<Headline>(0);
+    Headline *headline = root->get<Headline>(0);
     REQUIRE(headline);
     std::string head = headline->getAttribute<Region>("head").value().string();
     REQUIRE(head == "Headline");
     std::string body = headline->getAttribute<Region>("body").value().string();
     REQUIRE(body == "Text");
+    std::string content =
+        headline->getAttribute<Region>("content").value().string();
+    REQUIRE(content == "* Headline\nText");
     int level = headline->getAttribute<int>("level").value();
     REQUIRE(level == 1);
   }
   SECTION("when parsing a combined headline", "[combined]") {
-    RootElement root =
+    RootElement *root =
         orgcpp::parse("./resources/01-headline/02-combined-headline.org");
-    Headline *headline1 = root.get<Headline>(0);
-    Headline *headline2 = root.get<Headline>(1);
-    Headline *headline3 = root.get<Headline>(2);
-    Headline *headline4 = root.get<Headline>(4);
+    Headline *headline1 = root->get<Headline>(0);
+    Headline *headline2 = root->get<Headline>(0)->get<Headline>(0);
+    Headline *headline3 = root->get<Headline>(1);
+    Headline *headline4 = root->get<Headline>(2);
 
     REQUIRE(headline1);
     std::string head1 =
@@ -31,9 +34,12 @@ TEST_CASE("headline parsing should work properly", "[orgcpp][headline]") {
     REQUIRE(head1 == "Headline 1");
     std::string body1 =
         headline1->getAttribute<Region>("body").value().string();
-    REQUIRE(body1 == "Text 1\n- ListItem 1");
+    REQUIRE(body1 == "Text 1\n- ListItem 1\n** Headline 2\n- ListItem 2\n\n ");
     int level1 = headline1->getAttribute<int>("level").value();
     REQUIRE(level1 == 1);
+    std::string content1 =
+        headline1->getAttribute<Region>("content").value().string();
+    REQUIRE(content1 == "* Headline 1\nText 1\n- ListItem 1\n** Headline 2\n- ListItem 2\n\n ");
 
     REQUIRE(headline2);
     std::string head2 =
@@ -41,9 +47,12 @@ TEST_CASE("headline parsing should work properly", "[orgcpp][headline]") {
     REQUIRE(head2 == "Headline 2");
     std::string body2 =
         headline2->getAttribute<Region>("body").value().string();
-    REQUIRE(body2 == "- ListItem 2\n");
+    REQUIRE(body2 == "- ListItem 2\n\n ");
     int level2 = headline2->getAttribute<int>("level").value();
     REQUIRE(level2 == 2);
+    std::string content2 =
+        headline2->getAttribute<Region>("content").value().string();
+    REQUIRE(content2 == "** Headline 2\n- ListItem 2\n\n ");
 
     REQUIRE(headline3);
     std::string head3 =
@@ -54,7 +63,10 @@ TEST_CASE("headline parsing should work properly", "[orgcpp][headline]") {
     REQUIRE(body3 == "Text 2");
     int level3 = headline3->getAttribute<int>("level").value();
     REQUIRE(level3 == 1);
+    std::string content3 =
+        headline3->getAttribute<Region>("content").value().string();
+    REQUIRE(content3 == "* Headline 3\nText 2");
 
-    REQUIRE(headline4 == nullptr);    
+    REQUIRE(headline4 == nullptr);
   }
 }

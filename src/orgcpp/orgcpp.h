@@ -14,11 +14,11 @@
 namespace orgcpp {
 enum class Error { NONE, PARSE_FILE_OPEN_ERROR };
 extern Error error;
-RootElement parse(std::string path);
+RootElement *parse(std::string path);
 std::tuple<bool, std::shared_ptr<std::ifstream>>
 openFile(const std::string &path);
 bool readFileByBlocks(std::shared_ptr<std::ifstream>, std::size_t blockSize,
                       std::function<void(char *buffer)> callback);
 std::vector<Element*>
-processMatches(std::vector<Match<Element>> unsortedMatches);
+treefyMatches(std::vector<Match<Element>> treeFreeMatches);
 } // namespace orgcpp

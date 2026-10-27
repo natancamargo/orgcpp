@@ -13,23 +13,20 @@ void HeadlineMatcher::match(std::shared_ptr<std::ifstream> in,
 
   std::size_t innerCursor = cursor;
   bool found = false;
-  std::size_t numberOfWildcards, numberOfSpaces = 0;
+  int numberOfWildcards, numberOfSpaces = 0;
   Region region;
   region.setDocument(in);
   MatchType matchType = MatchType::NONE;
   Headline *headline;
   std::function<bool(char)> isNULL = [](char c) { return c == 0x00; };
   for (std::size_t i = 0; i < buffer.size(); i = (innerCursor - cursor)) {
-    if (isNULL(buffer[i])) {
-      break;
-    }
     if (buffer[i] == '*') {
       bool atBegin = i == 0;
       bool afterLF = i > 0 && buffer[i - 1] == '\n';
       if (atBegin || afterLF) {
         found = true;
         numberOfWildcards = 1;
-        numberOfSpaces = 0;        
+        numberOfSpaces = 0;
         matchType = MatchType::PARTIAL;
         region.first = innerCursor;
         headline = allocator::allocate<Headline>();
@@ -38,25 +35,24 @@ void HeadlineMatcher::match(std::shared_ptr<std::ifstream> in,
     }
     if (found) {
       std::size_t j = i + 1;
-      while (j < buffer.size() && !isNULL(buffer[j]) &&
-             (buffer[j] == '*' || buffer[j] == ' ')) {
+      while (j < buffer.size() && (buffer[j] == '*' || buffer[j] == ' ')) {
         if (buffer[j] == '*') {
           numberOfWildcards++;
         }
         if (buffer[j] == ' ') {
-          numberOfSpaces++;          
-        }          
+          numberOfSpaces++;
+        }
         innerCursor++;
         j++;
       }
       bool validPreHead = numberOfSpaces > 0 && numberOfWildcards > 0;
-      bool foundHead = validPreHead && !isNULL(buffer[j]) && buffer[j] != '\n';      
+      bool foundHead = validPreHead && buffer[j] != '\n';
       if (foundHead) {
-        headline->setAttribute("level", static_cast<int>(numberOfWildcards));
+        headline->setAttribute("level", numberOfWildcards);
         Region headRegion;
         headRegion.setDocument(in);
         headRegion.first = ++innerCursor;
-        while (!isNULL(buffer[j]) && j < buffer.size() && (buffer[j] != '\n')) {
+        while (j < buffer.size() && (buffer[j] != '\n')) {
           innerCursor++;
           j++;
         }
@@ -64,29 +60,52 @@ void HeadlineMatcher::match(std::shared_ptr<std::ifstream> in,
         headline->setAttribute("head", headRegion);
         matchType = MatchType::FULL;
       }
-      bool foundBody = validPreHead && !isNULL(buffer[j]) && buffer[j] == '\n';            
+      std::size_t savedInnerCursor = 0;
+      bool foundBody = foundHead && buffer[j] == '\n';
       if (foundBody) {
         std::size_t k = j + 1;
         Region bodyRegion;
         bodyRegion.setDocument(in);
         bodyRegion.first = ++innerCursor;
-        while (!isNULL(buffer[k]) && (k < buffer.size() - 2) &&
-               !((buffer[k + 1] == '\n') && (buffer[k + 2] == '*'))) {
+        while (k < buffer.size()) {
+          bool foundAnotherHeadline = k <= (buffer.size() - 2) &&
+                                      (buffer[k + 1] == '\n') &&
+                                      (buffer[k + 2] == '*');
+          if (foundAnotherHeadline) {
+            std::size_t l = k + 2;
+            int anotherHeadlineLevel = 0;
+            while (l < buffer.size() && buffer[l] == '*') {
+              anotherHeadlineLevel++;
+              l++;
+            }
+            if (numberOfWildcards >= anotherHeadlineLevel) {
+              innerCursor++;
+              break;
+            } else if (!savedInnerCursor) {
+              savedInnerCursor = innerCursor;
+            }
+          }
           innerCursor++;
           k++;
         }
-        if (isNULL(buffer[k]) || k == buffer.size()) {
-          bodyRegion.second = innerCursor - 1;
-        } else {
-          bodyRegion.second = ++innerCursor;
-        }
+        bodyRegion.second = innerCursor;
+        region.second = innerCursor;
         headline->setAttribute("body", bodyRegion);
       }
 
-      region.second = innerCursor;
-      Match<Headline> match{matchType, region, headline};
+      if (!foundBody) {
+        region.second = innerCursor;
+      }
+
+      headline->setAttribute("content", region);
+
+      Match<Headline> match{matchType, headline};
       _matches.push_back(match);
+
       found = false;
+      if (savedInnerCursor) {
+        innerCursor = savedInnerCursor;
+      }
     }
     innerCursor++;
   }

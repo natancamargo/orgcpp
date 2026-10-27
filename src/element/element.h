@@ -56,7 +56,7 @@ public:
 
   void addChild(Element *element);
   void removeChild(Element *element);
-
+  bool isChild(Element *element);
 protected:
   std::shared_ptr<std::ifstream> _document;
   std::map<std::string, Attribute> _attributes;

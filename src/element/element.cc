@@ -1,5 +1,6 @@
 #include "element/element.h"
 #include "attribute/attribute.h"
+#include <algorithm>
 #include <memory>
 
 namespace orgcpp {
@@ -82,6 +83,11 @@ void Element::addChild(Element *element) {
 void Element::removeChild(Element *element) {
   element->setParent(nullptr);
   _children.erase(std::remove(_children.begin(), _children.end(), element));
+}
+
+bool Element::isChild(Element *element) {
+  return std::find(_children.begin(), _children.end(), element) !=
+         _children.end();
 }
 
 } // namespace orgcpp

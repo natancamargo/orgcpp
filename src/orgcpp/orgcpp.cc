@@ -1,5 +1,8 @@
+#include "allocator/allocator.h"
+#include "allocator/allocator-impl.h"
 #include "orgcpp/orgcpp.h"
 #include "config/config.h"
+#include "util/string.h"
 #include "element/root-element.h"
 #include "matcher/headline-matcher.h"
 #include "matcher/matcher-impl.h"
@@ -8,6 +11,7 @@
 #include <cstddef>
 #include <format>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <ostream>
@@ -17,10 +21,10 @@
 
 namespace orgcpp {
 Error error = Error::NONE;
-RootElement parse(std::string path) {
+RootElement *parse(std::string path) {
   error = Error::NONE;
   std::cout << "parse: started." << std::endl;
-  RootElement root;
+  RootElement *root = allocator::allocate<RootElement>();
 
   // matchersq
   HeadlineMatcher headlineMatcher;
@@ -28,7 +32,7 @@ RootElement parse(std::string path) {
   // open file
   std::tuple<bool, std::shared_ptr<std::ifstream>> openFileResult =
       openFile(path);
-  root.setDocument(std::get<1>(openFileResult));
+  root->setDocument(std::get<1>(openFileResult));
   if (!std::get<0>(openFileResult)) {
     error = Error::PARSE_FILE_OPEN_ERROR;
     std::cout << "parse: failed." << std::endl;
@@ -38,27 +42,27 @@ RootElement parse(std::string path) {
   std::size_t cursor = 0;
   const int blockSize = config::blockSize;
   bool readResult = readFileByBlocks(
-      root.getDocument(), blockSize,
+      root->getDocument(), blockSize,
       [&cursor, &headlineMatcher, &root, blockSize](char *buffer) {
-        std::string bufferAsString = std::string{buffer, buffer + blockSize};
-        std::vector<Match<Element>> unsortedMatches;
+        std::string bufferAsString = nullTerminatedCharArrayToString(buffer, blockSize);
+        std::vector<Match<Element>> treeFreeMatches;
 
         // match
-        headlineMatcher.match(root.getDocument(), bufferAsString, cursor);
+        headlineMatcher.match(root->getDocument(), bufferAsString, cursor);
         if (headlineMatcher.getMatches().size() > 0) {
           for (Match<Headline> match : headlineMatcher.getMatches()) {
             if (std::get<0>(match) == MatchType::FULL) {
-              unsortedMatches.push_back(match);
+              treeFreeMatches.push_back(match);
             }
           }
         }
 
         // process matches into elements
-        std::vector<Element*> elements = processMatches(unsortedMatches);
+        std::vector<Element *> elements = treefyMatches(treeFreeMatches);
 
         // populate root
         for (Element *element : elements) {
-          root.addChild(element);
+          root->addChild(element);
         }
 
         cursor += blockSize;
@@ -103,12 +107,47 @@ bool readFileByBlocks(std::shared_ptr<std::ifstream> in, std::size_t blockSize,
   return true;
 }
 std::vector<Element *>
-processMatches(std::vector<Match<Element>> unsortedMatches) {
-  std::vector<Element *> sortedElements;
-  for (Match<Element> match : unsortedMatches) {
-    Element *element = std::get<2>(match);
-    sortedElements.push_back(element);
+treefyMatches(std::vector<Match<Element>> treeFreeMatches) {
+  std::vector<Element *> treefiedElements;
+
+  std::function<void(Element *&, Element *)> treefy = [&](Element *&left,
+                                                          Element *right) {
+    Region leftRegion = left->getAttribute<Region>("content").value();
+    Region rightRegion = right->getAttribute<Region>("content").value();
+    bool isLeftParent = leftRegion.first <= rightRegion.first &&
+                        leftRegion.second >= rightRegion.second;
+    bool isRightParent = rightRegion.first <= leftRegion.first &&
+                         rightRegion.second >= leftRegion.second;
+
+    if (isLeftParent) {
+      if (left->getChildren().size() > 0) {
+        for (Element *child : left->getChildren()) {
+          treefy(child, right);
+        }
+      } else if (left->getChildren().empty()) {
+        left->addChild(right);
+      }
+    } else {
+      if (isRightParent) {
+        // TODO
+      } else {
+        treefiedElements.push_back(right);
+      }
+      return;
+    }
+
+    return;
+  };
+
+  for (std::size_t i = 0; i < treeFreeMatches.size(); i++) {
+    Element *element2 = std::get<1>(treeFreeMatches[i]);
+    if (treefiedElements.empty()) {
+      treefiedElements.push_back(element2);
+      continue;
+    }
+    treefy(*treefiedElements.begin(), element2);
   }
-  return sortedElements;
+
+  return treefiedElements;
 }
 } // namespace orgcpp
