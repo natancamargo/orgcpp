@@ -6,6 +6,7 @@
 #include "matcher/headline-matcher.h"
 #include "matcher/matcher-impl.h"
 #include "matcher/matcher.h"
+#include "util/log.h"
 #include "util/string.h"
 
 #include <cstddef>
@@ -24,10 +25,11 @@ namespace orgcpp {
 Error error = Error::NONE;
 RootElement *parse(std::string path) {
   error = Error::NONE;
-  std::cout << "parse: started." << std::endl;
-  std::cout << std::format("******* {} *******",
-                           std::filesystem::path{path}.filename().string())
-            << std::endl;
+  config::debug = true;
+  log() << "parse: started." << std::endl;
+  log() << std::format("******* {} *******",
+                       std::filesystem::path{path}.filename().string())
+        << std::endl;
   RootElement *root = allocator::allocate<RootElement>();
 
   // matchersq
@@ -39,7 +41,7 @@ RootElement *parse(std::string path) {
   root->setDocument(std::get<1>(openFileResult));
   if (!std::get<0>(openFileResult)) {
     error = Error::PARSE_FILE_OPEN_ERROR;
-    std::cout << "parse: failed." << std::endl;
+    log() << "parse: failed." << std::endl;
   }
 
   // loop file
@@ -53,7 +55,7 @@ RootElement *parse(std::string path) {
         std::vector<Match<Element>> treeFreeMatches;
 
         // match
-        headlineMatcher.match(root->getDocument(), bufferAsString, cursor);
+        headlineMatcher.match(root, bufferAsString, cursor);
         if (headlineMatcher.getMatches().size() > 0) {
           for (Match<Headline> match : headlineMatcher.getMatches()) {
             if (std::get<0>(match) == MatchType::FULL) {
@@ -75,11 +77,11 @@ RootElement *parse(std::string path) {
 
   if (!readResult) {
     error = Error::PARSE_FILE_OPEN_ERROR;
-    std::cout << "parse: failed." << std::endl;
+    log() << "parse: failed." << std::endl;
   }
 
-  std::cout << "*********************" << std::endl;
-  std::cout << "parse: done." << std::endl;
+  log() << "*********************" << std::endl;
+  log() << "parse: done." << std::endl;
 
   return root;
 }
@@ -105,8 +107,8 @@ bool readFileByBlocks(std::shared_ptr<std::ifstream> in, std::size_t blockSize,
       callback(buffer.data());
     }
   } catch (const std::ifstream::failure &e) {
-    std::cout << std::format("Error: {}\nError code: {}\n", e.what(),
-                             e.code().value());
+    log() << std::format("Error: {}\nError code: {}\n", e.what(),
+                         e.code().value());
     return false;
   }
 

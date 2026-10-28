@@ -29,13 +29,6 @@ std::vector<Element *> Element::findAllByType(Type type) {
   return elements;
 }
 
-std::shared_ptr<std::ifstream> Element::getDocument() const {
-  return _document;
-}
-void Element::setDocument(std::shared_ptr<std::ifstream> document) {
-  _document = document;
-}
-
 const std::map<std::string, Attribute> &Element::getAttributes() const {
   return _attributes;
 }

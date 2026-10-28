@@ -1,26 +1,32 @@
 #include "matcher/headline-matcher.h"
 #include "allocator/allocator-impl.h"
+#include "config/config.h"
 #include "element/headline.h"
+#include "element/root-element.h"
 #include "matcher/matcher.h"
+#include "util/log.h"
 #include "util/string.h"
 #include <cstddef>
+#include <format>
+#include <fstream>
 #include <functional>
 #include <iostream>
+#include <memory>
 #include <string>
 
 namespace orgcpp {
-void HeadlineMatcher::match(std::shared_ptr<std::ifstream> in,
-                            const std::string &buffer, std::size_t cursor) {
-
+void HeadlineMatcher::match(RootElement *root, const std::string &buffer,
+                            std::size_t cursor) {
   std::size_t innerCursor = cursor;
+  std::shared_ptr<std::ifstream> in = root->getDocument();
   std::function<bool(char)> isNULL = [](char c) { return c == 0x00; };
   for (std::size_t i = 0; i < buffer.size(); i = (innerCursor - cursor)) {
     bool found = false;
     Region region;
     region.setDocument(in);
     MatchType matchType = MatchType::NONE;
-    Headline *headline;
-    int numberOfWildcards, numberOfSpaces = 0;
+    Headline *headline = nullptr;
+    int numberOfWildcards = 0, numberOfSpaces = 0;
     if (buffer[i] == '*') {
       bool atBegin = i == 0;
       bool afterLF = i > 0 && buffer[i - 1] == '\n';
@@ -31,7 +37,6 @@ void HeadlineMatcher::match(std::shared_ptr<std::ifstream> in,
         matchType = MatchType::PARTIAL;
         region.first = innerCursor;
         headline = allocator::allocate<Headline>();
-        headline->setDocument(in);
       }
     }
     if (found) {
@@ -50,24 +55,37 @@ void HeadlineMatcher::match(std::shared_ptr<std::ifstream> in,
       bool foundHead = validPreHead && buffer[j] != '\n';
       if (!foundHead) {
         innerCursor++;
-        continue;        
+        continue;
       }
       if (foundHead) {
-        std::cout << "xxxxxxx headline xxxxxxx" << std::endl;
-        headline->setAttribute("level", numberOfWildcards);
         Region headRegion;
         headRegion.setDocument(in);
         headRegion.first = ++innerCursor;
-        std::cout << "======= head =======" << std::endl;
         while (j < buffer.size() && (buffer[j] != '\n')) {
-          std::cout << buffer[j];
           innerCursor++;
           j++;
         }
         headRegion.second = innerCursor;
+        headline->setAttribute("level", numberOfWildcards);        
         headline->setAttribute("head", headRegion);
         matchType = MatchType::FULL;
-        std::cout << std::endl << "====================" << std::endl;        
+        // todo
+        const std::string &headlineAsString = headRegion.string();
+        for (const std::string &todo : root->getTodos()) {
+          if (headlineAsString.find(todo) != std::string::npos) {
+            headRegion.first += todo.size() + 1;            
+            headline->setAttribute("todo", todo);
+            headline->setAttribute("head", headRegion);
+            break;
+          }
+        }
+        log() << "xxxxxxx headline xxxxxxx" << std::endl;        
+        log() << "======= level =======" << std::endl;
+        log() << numberOfWildcards << std::endl;
+        log() << "====================" << std::endl;
+        log() << "======= head =======" << std::endl;
+        log() << headlineAsString;        
+        log() << "====================" << std::endl;        
       }
       std::size_t savedInnerCursor = 0;
       bool foundBody = foundHead && buffer[j] == '\n';
@@ -75,12 +93,12 @@ void HeadlineMatcher::match(std::shared_ptr<std::ifstream> in,
         Region bodyRegion;
         bodyRegion.setDocument(in);
         bodyRegion.first = innerCursor + 1;
-        std::cout << "~~~~~~~ body ~~~~~~~";
+        log() << "~~~~~~~ body ~~~~~~~";
         while (j < buffer.size()) {
           bool foundAnotherHeadline =
-              (j <= (buffer.size() - 1) && (buffer[j] == '\n') &&
+              (j < (buffer.size() - 1) && (buffer[j] == '\n') &&
                (buffer[j + 1] == '*'));
-          std::cout << buffer[j];
+          log() << buffer[j];
           if (foundAnotherHeadline) {
             std::size_t k = j + 1;
             int anotherHeadlineLevel = 0;
@@ -89,10 +107,10 @@ void HeadlineMatcher::match(std::shared_ptr<std::ifstream> in,
               k++;
             }
             if (numberOfWildcards >= anotherHeadlineLevel) {
-              innerCursor++;              
+              innerCursor++;
               break;
             } else if (!savedInnerCursor) {
-              std::cout << "^";
+              log() << "^";
               savedInnerCursor = innerCursor;
             }
           }
@@ -102,7 +120,7 @@ void HeadlineMatcher::match(std::shared_ptr<std::ifstream> in,
         bodyRegion.second = innerCursor;
         region.second = innerCursor;
         headline->setAttribute("body", bodyRegion);
-                std::cout << std::endl << "~~~~~~~~~~~~~~~~~~~~" << std::endl;        
+        log() << std::endl << "~~~~~~~~~~~~~~~~~~~~" << std::endl;
       }
 
       if (!foundBody) {
@@ -115,11 +133,12 @@ void HeadlineMatcher::match(std::shared_ptr<std::ifstream> in,
       _matches.push_back(match);
 
       if (savedInnerCursor) {
-        std::cout << "^^" << std::endl;
+        log() << "^^" << std::endl;
         innerCursor = savedInnerCursor;
       }
-      std::cout << "xxxxxxxxxxxxxxxxxxxxxxxx" << std::endl;
-      continue;      
+      log() << "xxxxxxxxxxxxxxxxxxxxxxxx" << std::endl;
+      log() << std::format("> innerCursor: {}", innerCursor) << std::endl;
+      continue;
     }
     innerCursor++;
   }

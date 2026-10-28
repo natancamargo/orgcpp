@@ -50,6 +50,7 @@ add_library(${LIBRARY_NAME} STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/src/region/region.cc"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/util/string.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/util/log.cc"
 )
 target_link_libraries(${LIBRARY_NAME} PUBLIC)
 target_include_directories(${LIBRARY_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")

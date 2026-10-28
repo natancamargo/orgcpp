@@ -14,5 +14,8 @@ constexpr std::int32_t project_version_patch{@PROJECT_VERSION_PATCH@};
 
 // Size of the block/chunk of file read by time
 inline int blockSize = 64 * 1024;
+
+// should debug logs
+inline bool debug = false;
 } // namespace config
 } // namespace orgToAnki

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "element/root-element.h"
 #include <cstddef>
 #include <fstream>
 #include <memory>
@@ -13,7 +14,7 @@ enum class MatchType {
 template <typename T> using Match = std::tuple<MatchType, T *>;
 template <typename T> class Matcher {
 public:
-  virtual void match(std::shared_ptr<std::ifstream> in,
+  virtual void match(RootElement *root,
                      const std::string &buffer, std::size_t cursor) = 0;
   const std::vector<Match<T>> &getMatches() const;
 

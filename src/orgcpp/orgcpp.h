@@ -17,7 +17,7 @@ extern Error error;
 RootElement *parse(std::string path);
 std::tuple<bool, std::shared_ptr<std::ifstream>>
 openFile(const std::string &path);
-bool readFileByBlocks(std::shared_ptr<std::ifstream>, std::size_t blockSize,
+bool readFileByBlocks(std::shared_ptr<std::ifstream> in, std::size_t blockSize,
                       std::function<void(char *buffer)> callback);
 std::vector<Element*>
 treefyMatches(std::vector<Match<Element>> treeFreeMatches);
