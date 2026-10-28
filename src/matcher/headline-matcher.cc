@@ -12,6 +12,7 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <ostream>
 #include <string>
 
 namespace orgcpp {
@@ -66,26 +67,35 @@ void HeadlineMatcher::match(RootElement *root, const std::string &buffer,
           j++;
         }
         headRegion.second = innerCursor;
-        headline->setAttribute("level", numberOfWildcards);        
+        headline->setAttribute("level", numberOfWildcards);
         headline->setAttribute("head", headRegion);
         matchType = MatchType::FULL;
         // todo
+        bool hasTodo = false;
         const std::string &headlineAsString = headRegion.string();
         for (const std::string &todo : root->getTodos()) {
           if (headlineAsString.find(todo) != std::string::npos) {
-            headRegion.first += todo.size() + 1;            
+            hasTodo = true;
+            headRegion.first += todo.size() + 1;
             headline->setAttribute("todo", todo);
             headline->setAttribute("head", headRegion);
             break;
           }
         }
-        log() << "xxxxxxx headline xxxxxxx" << std::endl;        
-        log() << "======= level =======" << std::endl;
+        log() << "xxxxxxx headline xxxxxxx" << std::endl;
+        log() << "------- level ------" << std::endl;
         log() << numberOfWildcards << std::endl;
-        log() << "====================" << std::endl;
+        log() << "--------------------" << std::endl;
+        if (hasTodo) {
+          log() << "+++++++ todo +++++++" << std::endl;
+          log() << headline->getAttribute<std::string>("todo").value()
+                << std::endl;
+          log() << "++++++++++++++++++++" << std::endl;
+        }
         log() << "======= head =======" << std::endl;
-        log() << headlineAsString;        
-        log() << "====================" << std::endl;        
+        log() << headline->getAttribute<Region>("head").value().string()
+              << std::endl;
+        log() << "====================" << std::endl;
       }
       std::size_t savedInnerCursor = 0;
       bool foundBody = foundHead && buffer[j] == '\n';
@@ -93,7 +103,6 @@ void HeadlineMatcher::match(RootElement *root, const std::string &buffer,
         Region bodyRegion;
         bodyRegion.setDocument(in);
         bodyRegion.first = innerCursor + 1;
-        log() << "~~~~~~~ body ~~~~~~~";
         while (j < buffer.size()) {
           bool foundAnotherHeadline =
               (j < (buffer.size() - 1) && (buffer[j] == '\n') &&
@@ -120,7 +129,13 @@ void HeadlineMatcher::match(RootElement *root, const std::string &buffer,
         bodyRegion.second = innerCursor;
         region.second = innerCursor;
         headline->setAttribute("body", bodyRegion);
-        log() << std::endl << "~~~~~~~~~~~~~~~~~~~~" << std::endl;
+        if (bodyRegion.first < bodyRegion.second) {
+          const std::string &body =
+              headline->getAttribute<Region>("body").value().string();
+          log() << "~~~~~~~ body ~~~~~~~";
+          log() << body << std::endl;
+          log() << "~~~~~~~~~~~~~~~~~~~~" << std::endl;
+        }
       }
 
       if (!foundBody) {
