@@ -2,11 +2,11 @@
 
 #include "element/listitem.h"
 #include "element/root.h"
-#include "matcher/matcher.h"
+#include "parser/parser.h"
 namespace orgcpp {
-class ListitemMatcher : public Matcher<Listitem> {
+class ListitemParser : public Parser<Listitem> {
 public:
-  void match(RootElement *root, const char *buffer, const std::size_t size,
+  void parse(RootElement *root, const char *buffer, const std::size_t size,
              std::size_t cursor) override;
 };
 } // namespace orgcpp

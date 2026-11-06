@@ -1,0 +1,157 @@
+#include "parser/headline-parser.h"
+#include "allocator/allocator-impl.h"
+#include "element/headline.h"
+#include "element/root.h"
+#include "parser/parser.h"
+#include "parser/parser-impl.h"
+#include "util/log.h"
+#include <cstddef>
+#include <format>
+#include <fstream>
+#include <functional>
+#include <iostream>
+#include <memory>
+#include <ostream>
+#include <string>
+
+namespace orgcpp {
+void HeadlineParser::parse(RootElement *root, const char *buffer,
+                            const std::size_t size, std::size_t cursor) {
+  _results.clear();
+  std::size_t innerCursor = cursor;
+  std::shared_ptr<std::ifstream> in = root->getDocument();
+  std::function<bool(char)> isNULL = [](char c) { return c == 0x00; };
+  for (std::size_t i = 0; i < size; i = (innerCursor - cursor)) {
+    bool found = false;
+    Region region;
+    region.setDocument(in);
+    ParserResultType resultType = ParserResultType::NONE;
+    Headline *headline = nullptr;
+    int numberOfWildcards = 0, numberOfSpaces = 0;
+    if (buffer[i] == '*') {
+      bool atBegin = i == 0;
+      bool afterLF = i > 0 && buffer[i - 1] == '\n';
+      if (atBegin || afterLF) {
+        found = true;
+        numberOfWildcards = 1;
+        numberOfSpaces = 0;
+        resultType = ParserResultType::PARTIAL;
+        region.first = innerCursor;
+        headline = allocator::allocate<Headline>();
+      }
+    }
+    if (found) {
+      std::size_t j = i + 1;
+      while (j < size && (buffer[j] == '*' || buffer[j] == ' ')) {
+        if (buffer[j] == '*') {
+          numberOfWildcards++;
+        }
+        if (buffer[j] == ' ') {
+          numberOfSpaces++;
+        }
+        innerCursor++;
+        j++;
+      }
+      bool validPreHead = numberOfSpaces > 0 && numberOfWildcards > 0;
+      bool foundHead = validPreHead && buffer[j] != '\n';
+      if (!foundHead) {
+        innerCursor++;
+        continue;
+      }
+      if (foundHead) {
+        Region headRegion;
+        headRegion.setDocument(in);
+        headRegion.first = ++innerCursor;
+        while (j < size && (buffer[j] != '\n')) {
+          innerCursor++;
+          j++;
+        }
+        headRegion.second = innerCursor;
+        headline->setAttribute("level", numberOfWildcards);
+        headline->setAttribute("head", headRegion);
+        resultType = ParserResultType::FULL;
+        // todo
+        bool hasTodo = false;
+        const std::string &headlineAsString = headRegion.string();
+        for (const std::string &todo : root->getTodos()) {
+          if (headlineAsString.find(todo) != std::string::npos) {
+            hasTodo = true;
+            headRegion.first += todo.size() + 1;
+            headline->setAttribute("todo", todo);
+            headline->setAttribute("head", headRegion);
+            break;
+          }
+        }
+        log() << "xxxxxxx headline xxxxxxx" << std::endl;
+        log() << "------- level ------" << std::endl;
+        log() << numberOfWildcards << std::endl;
+        log() << "--------------------" << std::endl;
+        if (hasTodo) {
+          log() << "+++++++ todo +++++++" << std::endl;
+          log() << *headline->getAttribute<std::string>("todo") << std::endl;
+          log() << "++++++++++++++++++++" << std::endl;
+        }
+        log() << "======= head =======" << std::endl;
+        log() << headline->getAttribute<Region>("head")->string() << std::endl;
+        log() << "====================" << std::endl;
+      }
+      std::size_t savedInnerCursor = 0;
+      bool foundBody = foundHead && buffer[j] == '\n';
+      if (foundBody) {
+        Region bodyRegion;
+        bodyRegion.setDocument(in);
+        bodyRegion.first = innerCursor + 1;
+        while (j < size) {
+          bool foundAnotherHeadline =
+              (j < (size - 1) && (buffer[j] == '\n') &&
+               (buffer[j + 1] == '*'));
+          if (foundAnotherHeadline) {
+            std::size_t k = j + 1;
+            int anotherHeadlineLevel = 0;
+            while (k < size && buffer[k] == '*') {
+              anotherHeadlineLevel++;
+              k++;
+            }
+            if (numberOfWildcards >= anotherHeadlineLevel) {
+              innerCursor++;
+              break;
+            } else if (!savedInnerCursor) {
+              savedInnerCursor = innerCursor;
+            }
+          }
+          innerCursor++;
+          j++;
+        }
+        bodyRegion.second = innerCursor;
+        region.second = innerCursor;
+        headline->setAttribute("body", bodyRegion);
+        if (bodyRegion.first < bodyRegion.second) {
+          const std::string &body =
+              headline->getAttribute<Region>("body")->string();
+          log() << "~~~~~~~ body ~~~~~~~" << std::endl;
+          log() << body << std::endl;
+          log() << "~~~~~~~~~~~~~~~~~~~~" << std::endl;
+        }
+      }
+
+      if (!foundBody) {
+        region.second = innerCursor;
+      }
+
+      headline->setAttribute("content", region);
+
+      ParserResult<Headline> result{resultType, headline};
+      _results.push_back(result);
+
+      if (savedInnerCursor) {
+        log() << "^^" << std::endl;
+        innerCursor = savedInnerCursor;
+      }
+      log() << "xxxxxxxxxxxxxxxxxxxxxxxx" << std::endl;
+      log() << std::format("> innerCursor: {}", innerCursor) << std::endl;
+      continue;
+    }
+    innerCursor++;
+  }
+}
+} // namespace orgcpp

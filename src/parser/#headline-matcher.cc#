@@ -27,7 +27,7 @@ void HeadlineMatcher::match(RootElement *root, const char *buffer,
     bool found = false;
     Region region;
     region.setDocument(in);
-    MatchType matchType = MatchType::NONE;
+    ParseResultType matchType = ParseResultType::NONE;
     Headline *headline = nullptr;
     int numberOfWildcards = 0, numberOfSpaces = 0;
     if (buffer[i] == '*') {
@@ -37,7 +37,7 @@ void HeadlineMatcher::match(RootElement *root, const char *buffer,
         found = true;
         numberOfWildcards = 1;
         numberOfSpaces = 0;
-        matchType = MatchType::PARTIAL;
+        matchType = ParseResultType::PARTIAL;
         region.first = innerCursor;
         headline = allocator::allocate<Headline>();
       }
@@ -71,7 +71,7 @@ void HeadlineMatcher::match(RootElement *root, const char *buffer,
         headRegion.second = innerCursor;
         headline->setAttribute("level", numberOfWildcards);
         headline->setAttribute("head", headRegion);
-        matchType = MatchType::FULL;
+        matchType = ParseResultType::FULL;
         // todo
         bool hasTodo = false;
         const std::string &headlineAsString = headRegion.string();
@@ -142,7 +142,7 @@ void HeadlineMatcher::match(RootElement *root, const char *buffer,
 
       headline->setAttribute("content", region);
 
-      Match<Headline> match{matchType, headline};
+      ParseResult<Headline> match{matchType, headline};
       _matches.push_back(match);
 
       if (savedInnerCursor) {

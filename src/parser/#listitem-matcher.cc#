@@ -45,7 +45,7 @@ void ListitemMatcher::match(RootElement *root, const char *buffer,
   int level = 0;
   int parentLevel = 0;
   std::size_t savedIndex = 0;
-  MatchType matchType = MatchType::NONE;
+  ParseResultType matchType = ParseResultType::NONE;
   Listitem *listitem;
   for (std::size_t i = 0; i < size; i++) {
     endOfFile = i == (size - 1);
@@ -124,11 +124,11 @@ void ListitemMatcher::match(RootElement *root, const char *buffer,
       if (endOfFile) {
         region.second++;
       }
-      matchType = MatchType::FULL;
+      matchType = ParseResultType::FULL;
 
       if (listitem && listitem->getAttribute<Region>("head")) {
         listitem->setAttribute("content", region);
-        Match<Listitem> match{matchType, listitem};
+        ParseResult<Listitem> match{matchType, listitem};
         _matches.push_back(match);
 
         // logs
@@ -159,7 +159,7 @@ void ListitemMatcher::match(RootElement *root, const char *buffer,
     if (begin) {
       region.first = i + cursor;
       listitem = allocator::allocate<Listitem>();
-      matchType = MatchType::PARTIAL;
+      matchType = ParseResultType::PARTIAL;
     }
 
     lastHeadEnd = headEnd;

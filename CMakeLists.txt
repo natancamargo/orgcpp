@@ -39,6 +39,7 @@ add_library(${LIBRARY_NAME} STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/src/attribute/attribute.cc"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/orgcpp/orgcpp.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/orgcpp/parser-manager.cc"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/checkbox.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/element.cc"
@@ -46,9 +47,9 @@ add_library(${LIBRARY_NAME} STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/root.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/headline.cc"
 
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/matcher/headline-matcher.cc"
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/matcher/listitem-matcher.cc"
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/matcher/matcher.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/headline-parser.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/listitem-parser.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/parser.cc"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/region/region.cc"
 

@@ -4,7 +4,7 @@
 #include <vector>
 namespace orgcpp {
 template <typename T>
-const std::vector<Match<T>> &Matcher<T>::getMatches() const {
-  return _matches;
+const std::vector<ParseResult<T>> &Parser<T>::getResults() const {
+  return _results;
 }
 } // namespace orgcpp

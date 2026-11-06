@@ -1,0 +1,128 @@
+#include "orgcpp/parser-manager.h"
+#include "util/log.h"
+#include <algorithm>
+#include <format>
+
+namespace orgcpp {
+std::vector<Element *> ParserManager::treefyResults(
+    std::vector<ParserResult<Element>> treeFreeResults) {
+  std::vector<Element *> treefiedElements;
+
+  std::function<bool(Element *, Element *)> contains = [](Element *left,
+                                                          Element *right) {
+    Region *leftRegion = left->getAttribute<Region>("content");
+    Region *rightRegion = right->getAttribute<Region>("content");
+    return leftRegion->first <= rightRegion->first &&
+           leftRegion->second >= rightRegion->second;
+  };
+
+  std::function<void(Element *&, Element *)> treefy = [&](Element *&left,
+                                                          Element *right) {
+    std::string leftHead = left->getAttribute<Region>("head")->string();
+    std::string rightHead = right->getAttribute<Region>("head")->string();
+    bool isLeftParent = contains(left, right);
+    bool isRightParent = contains(right, left);
+
+    if (isLeftParent) {
+      std::vector<Element *> children = left->getChildren();
+      std::vector<Element *>::iterator iterator =
+          std::find_if(children.begin(), children.end(), [&](Element *element) {
+            return contains(element, right);
+          });
+      if (iterator != children.end()) {
+        std::string head = (*iterator)->getAttribute<Region>("head")->string();
+        log() << std::format("searching if \"{}\" is child of \"{}\"",
+                             rightHead, head)
+              << std::endl;
+        treefy(*iterator, right);
+      } else {
+        log() << std::format("\"{}\" is child of \"{}\"", rightHead, leftHead)
+              << std::endl;
+        left->addChild(right);
+      }
+    } else {
+      if (isRightParent) {
+        log() << std::format("\"{}\" is child of \"{}\"", leftHead, rightHead)
+              << std::endl;
+        log() << "Not implemented (right is parent)" << std::endl;
+        // TODO
+      }
+      return;
+    }
+
+    return;
+  };
+
+  std::function<void(std::vector<Element *> &)> sort =
+      [&](std::vector<Element *> &elements) {
+        if (elements.empty()) {
+          return;
+        }
+        std::sort(elements.begin(), elements.end(),
+                  [](Element *left, Element *right) {
+                    Region *leftRegion = left->getAttribute<Region>("content");
+                    Region *rightRegion =
+                        right->getAttribute<Region>("content");
+                    return leftRegion->first < rightRegion->first;
+                  });
+        for (Element *element : elements) {
+          sort(element->getChildren());
+        }
+      };
+
+  log() << "!!!!!!! treefy !!!!!!!" << std::endl;
+  for (std::size_t i = 0; i < treeFreeResults.size(); i++) {
+    Element *element2 = std::get<1>(treeFreeResults[i]);
+    std::string head = element2->getAttribute<Region>("head")->string();
+    log() << "treefying: " << head << std::endl;
+    if (treefiedElements.empty()) {
+      log() << element2->getAttribute<Region>("head")->string() << " is at root"
+            << std::endl;
+      treefiedElements.push_back(element2);
+      continue;
+    }
+    std::vector<Element *>::iterator iterator = std::find_if(
+        treefiedElements.begin(), treefiedElements.end(),
+        [&](Element *element1) { return contains(element1, element2); });
+    if (iterator != treefiedElements.end()) {
+      treefy(*iterator, element2);
+    } else {
+      log() << std::format("\"{}\" is root child", head) << std::endl;
+      treefiedElements.push_back(element2);
+    }
+  }
+  log() << "!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+
+  sort(treefiedElements);
+
+  return treefiedElements;
+}
+void ParserManager::parse(RootElement *root, const char *buffer,
+                          const std::size_t size, std::size_t cursor) {
+  // parsing  
+  std::vector<ParserResult<Element>> results;  
+  _headlineParser.parse(root, buffer, size, cursor);
+  if (_headlineParser.getResults().size() > 0) {
+    for (const ParserResult<Element> match : _headlineParser.getResults()) {
+      if (std::get<0>(match) == ParserResultType::FULL) {
+        results.push_back(match);
+      }
+    }
+  }
+  _listitemParser.parse(root, buffer, size, cursor);
+  if (_listitemParser.getResults().size() > 0) {
+    for (const ParserResult<Element> match : _listitemParser.getResults()) {
+      if (std::get<0>(match) == ParserResultType::FULL) {
+        results.push_back(match);
+      }
+    }
+  }
+
+  // treefy results into an ast like way
+  std::vector<Element *> elements = treefyResults(results);
+  // populate root
+  for (Element *element : elements) {
+    root->addChild(element);
+  }
+}
+} // namespace orgcpp
