@@ -43,9 +43,9 @@ void Element::setAttribute(const std::string &name,
 Element *Element::getParent() const { return _parent; }
 void Element::setParent(Element *parent) { _parent = parent; }
 
-std::vector<Element *> Element::getChildren() const { return _children; }
+std::vector<Element *> &Element::getChildren() { return _children; }
 
-const Type Element::getType() const { return _type; }
+Type Element::getType() const { return _type; }
 void Element::setType(const Type type) { _type = type; }
 
 void Element::traverse(TraverseFunction traverseFunc) {

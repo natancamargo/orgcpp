@@ -2,16 +2,15 @@
 
 #include "attribute/attribute.h"
 #include "element/element.h"
+#include <iostream>
 namespace orgcpp {
 template <typename T>
-std::optional<T> Element::getAttribute(const std::string &name) {
+T *Element::getAttribute(const std::string &name) {
   try {
-    Attribute attribute = _attributes.at(name);
-    return std::get<T>(attribute.getValue());
+    Attribute &attribute = _attributes.at(name);
+    return std::get_if<T>(&attribute.getValue());
   } catch (const std::out_of_range &e) {
-    return std::nullopt;
-  } catch (const std::bad_variant_access &ex) {
-    return std::nullopt;
+    return nullptr;
   }
 }
 template <typename T> T *Element::get(std::size_t index) const {

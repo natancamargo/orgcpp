@@ -9,6 +9,10 @@ Region::Region(const std::size_t x, const std::size_t y) {
   first = x;
   second = y;
 }
+Region::Region(std::shared_ptr<std::ifstream> document) {
+  _document = document;
+}
+  
 std::shared_ptr<std::ifstream> Region::getDocument() const { return _document; }
 void Region::setDocument(std::shared_ptr<std::ifstream> document) {
   _document = document;

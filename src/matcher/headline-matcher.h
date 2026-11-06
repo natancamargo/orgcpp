@@ -1,12 +1,12 @@
 #pragma once
 
 #include "element/headline.h"
-#include "element/root-element.h"
+#include "element/root.h"
 #include "matcher/matcher.h"
 namespace orgcpp {
 class HeadlineMatcher : public Matcher<Headline> {
 public:
-  void match(RootElement *root, const std::string &buffer,
+  void match(RootElement *root, const char *buffer, const std::size_t size,
              std::size_t cursor) override;
 };
 } // namespace orgcpp

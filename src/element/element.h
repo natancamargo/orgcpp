@@ -31,14 +31,14 @@ public:
 
   const std::map<std::string, Attribute> &getAttributes() const;
   void setAttribute(const std::string &name, const AttributeValue &value);
-  template <typename T> std::optional<T> getAttribute(const std::string &name);
+  template <typename T> T *getAttribute(const std::string &name);
 
   Element *getParent() const;
   void setParent(Element *parent);
 
-  std::vector<Element*> getChildren() const;
+  std::vector<Element*> &getChildren();
 
-  const Type getType() const;
+  Type getType() const;
   void setType(const Type type);
 
   void traverse(TraverseFunction traverseFunc);

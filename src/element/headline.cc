@@ -3,6 +3,6 @@
 
 namespace orgcpp {
 bool Headline::isTodo() {
-  return getAttribute<std::string>("todo").has_value();
+  return !!getAttribute<std::string>("todo");
 }
 } // namespace orgcpp

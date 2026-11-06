@@ -2,7 +2,8 @@
 #include "allocator/allocator-impl.h"
 #include "config/config.h"
 #include "element/headline.h"
-#include "element/root-element.h"
+#include "element/element-impl.h"
+#include "element/root.h"
 #include "matcher/matcher.h"
 #include "util/log.h"
 #include "util/string.h"
@@ -16,12 +17,13 @@
 #include <string>
 
 namespace orgcpp {
-void HeadlineMatcher::match(RootElement *root, const std::string &buffer,
-                            std::size_t cursor) {
+void HeadlineMatcher::match(RootElement *root, const char *buffer,
+                            const std::size_t size, std::size_t cursor) {
+  _matches.clear();
   std::size_t innerCursor = cursor;
   std::shared_ptr<std::ifstream> in = root->getDocument();
   std::function<bool(char)> isNULL = [](char c) { return c == 0x00; };
-  for (std::size_t i = 0; i < buffer.size(); i = (innerCursor - cursor)) {
+  for (std::size_t i = 0; i < size; i = (innerCursor - cursor)) {
     bool found = false;
     Region region;
     region.setDocument(in);
@@ -42,7 +44,7 @@ void HeadlineMatcher::match(RootElement *root, const std::string &buffer,
     }
     if (found) {
       std::size_t j = i + 1;
-      while (j < buffer.size() && (buffer[j] == '*' || buffer[j] == ' ')) {
+      while (j < size && (buffer[j] == '*' || buffer[j] == ' ')) {
         if (buffer[j] == '*') {
           numberOfWildcards++;
         }
@@ -62,7 +64,7 @@ void HeadlineMatcher::match(RootElement *root, const std::string &buffer,
         Region headRegion;
         headRegion.setDocument(in);
         headRegion.first = ++innerCursor;
-        while (j < buffer.size() && (buffer[j] != '\n')) {
+        while (j < size && (buffer[j] != '\n')) {
           innerCursor++;
           j++;
         }
@@ -88,13 +90,11 @@ void HeadlineMatcher::match(RootElement *root, const std::string &buffer,
         log() << "--------------------" << std::endl;
         if (hasTodo) {
           log() << "+++++++ todo +++++++" << std::endl;
-          log() << headline->getAttribute<std::string>("todo").value()
-                << std::endl;
+          log() << *headline->getAttribute<std::string>("todo") << std::endl;
           log() << "++++++++++++++++++++" << std::endl;
         }
         log() << "======= head =======" << std::endl;
-        log() << headline->getAttribute<Region>("head").value().string()
-              << std::endl;
+        log() << headline->getAttribute<Region>("head")->string() << std::endl;
         log() << "====================" << std::endl;
       }
       std::size_t savedInnerCursor = 0;
@@ -103,15 +103,14 @@ void HeadlineMatcher::match(RootElement *root, const std::string &buffer,
         Region bodyRegion;
         bodyRegion.setDocument(in);
         bodyRegion.first = innerCursor + 1;
-        while (j < buffer.size()) {
+        while (j < size) {
           bool foundAnotherHeadline =
-              (j < (buffer.size() - 1) && (buffer[j] == '\n') &&
+              (j < (size - 1) && (buffer[j] == '\n') &&
                (buffer[j + 1] == '*'));
-          log() << buffer[j];
           if (foundAnotherHeadline) {
             std::size_t k = j + 1;
             int anotherHeadlineLevel = 0;
-            while (k < buffer.size() && buffer[k] == '*') {
+            while (k < size && buffer[k] == '*') {
               anotherHeadlineLevel++;
               k++;
             }
@@ -119,7 +118,6 @@ void HeadlineMatcher::match(RootElement *root, const std::string &buffer,
               innerCursor++;
               break;
             } else if (!savedInnerCursor) {
-              log() << "^";
               savedInnerCursor = innerCursor;
             }
           }
@@ -131,8 +129,8 @@ void HeadlineMatcher::match(RootElement *root, const std::string &buffer,
         headline->setAttribute("body", bodyRegion);
         if (bodyRegion.first < bodyRegion.second) {
           const std::string &body =
-              headline->getAttribute<Region>("body").value().string();
-          log() << "~~~~~~~ body ~~~~~~~";
+              headline->getAttribute<Region>("body")->string();
+          log() << "~~~~~~~ body ~~~~~~~" << std::endl;
           log() << body << std::endl;
           log() << "~~~~~~~~~~~~~~~~~~~~" << std::endl;
         }
