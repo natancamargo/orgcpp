@@ -97,26 +97,27 @@ std::vector<Element *> ParserManager::treefyResults(
 
   return treefiedElements;
 }
+template <typename T>
+void ParserManager::collectResults(
+    Parser<T> &parser, std::vector<ParserResult<Element>> &results) {
+  for (const ParserResult<Element> match : parser.getResults()) {
+    if (std::get<0>(match) == ParserResultType::FULL) {
+      results.push_back(match);
+    }
+  }
+}
 void ParserManager::parse(RootElement *root, const char *buffer,
                           const std::size_t size, std::size_t cursor) {
-  // parsing  
-  std::vector<ParserResult<Element>> results;  
+  // parsing
+  std::vector<ParserResult<Element>> results;
   _headlineParser.parse(root, buffer, size, cursor);
-  if (_headlineParser.getResults().size() > 0) {
-    for (const ParserResult<Element> match : _headlineParser.getResults()) {
-      if (std::get<0>(match) == ParserResultType::FULL) {
-        results.push_back(match);
-      }
-    }
-  }
   _listitemParser.parse(root, buffer, size, cursor);
-  if (_listitemParser.getResults().size() > 0) {
-    for (const ParserResult<Element> match : _listitemParser.getResults()) {
-      if (std::get<0>(match) == ParserResultType::FULL) {
-        results.push_back(match);
-      }
-    }
-  }
+  _linkParser.parse(root, buffer, size, cursor);
+
+  // collect results
+  collectResults(_headlineParser, results);
+  collectResults(_listitemParser, results);
+  collectResults(_linkParser, results);
 
   // treefy results into an ast like way
   std::vector<Element *> elements = treefyResults(results);

@@ -37,11 +37,11 @@ find_package(Catch2 CONFIG REQUIRED)
 set(LIBRARY_NAME orgcpp)
 add_library(${LIBRARY_NAME} STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/src/attribute/attribute.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/attribute/checkbox.cc"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/orgcpp/orgcpp.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/orgcpp/parser-manager.cc"
 
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/element/checkbox.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/element.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/listitem.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/root.cc"
@@ -49,6 +49,7 @@ add_library(${LIBRARY_NAME} STATIC
 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/headline-parser.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/listitem-parser.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/link-parser.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/parser.cc"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/region/region.cc"
@@ -77,6 +78,7 @@ set(TEST_NAME "orgcpp-unit-tests")
 add_executable(${TEST_NAME}
   "${CMAKE_CURRENT_SOURCE_DIR}/tests/headline.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/tests/listitem.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/tests/link.cc"
 )
 target_link_libraries(${TEST_NAME} PUBLIC ${LIBRARY_NAME} Catch2::Catch2WithMain)
 set_target_properties(${TEST_NAME} PROPERTIES

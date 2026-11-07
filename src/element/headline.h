@@ -5,6 +5,7 @@ namespace orgcpp {
 class Headline : public Element {
 public:
   bool isTodo();
+  bool isCheckbox();
 
 protected:
   Type _type = Type::HEADLINE;

@@ -91,7 +91,7 @@ TEST_CASE("headline parsing should work properly", "[orgcpp][headline]") {
       headline3->getAttribute<Region>("content")->string();
     REQUIRE(content3 == "*** Headline 3\nText 3\n");
   }
-  SECTION("when parsing a nested basic-todo", "[basic][todo]") {
+  SECTION("when parsing a nested basic-todo", "[todo]") {
     RootElement *root =
       orgcpp::parse("./resources/01-headline/04-basic-todo-headline.org");
     Headline *headline1 = root->get<Headline>(0);
@@ -114,6 +114,29 @@ TEST_CASE("headline parsing should work properly", "[orgcpp][headline]") {
     std::string *todo2 =
       headline2->getAttribute<std::string>("todo");
     REQUIRE(*todo2 == "DONE");
+  }
+  SECTION("when parsing a checkbox headline", "[checkbox]") {
+    RootElement *root =
+      orgcpp::parse("./resources/01-headline/07-checkbox-headline.org");
+    Headline *headline1 = root->get<Headline>(0);
+    Headline *headline2 = root->get<Headline>(1);
+    
+    REQUIRE(headline1);
+    std::string head1 =
+      headline1->getAttribute<Region>("head")->string();
+    REQUIRE(head1 == "Headline 1");
+    REQUIRE(headline1->isCheckbox());
+    bool *checkbox1 =
+      headline1->getAttribute<bool>("checkbox");
+    REQUIRE(*checkbox1 == false);
 
+    REQUIRE(headline2);
+    std::string head2 =
+      headline2->getAttribute<Region>("head")->string();
+    REQUIRE(head2 == "Headline 2");
+    REQUIRE(headline2->isCheckbox());
+    bool *checkbox2 =
+      headline2->getAttribute<bool>("checkbox");
+    REQUIRE(*checkbox2 == true);
   }
 }

@@ -1,3 +1,4 @@
+#include "attribute/checkbox.h"
 #include "parser/listitem-parser.h"
 #include "allocator/allocator-impl.h"
 #include "parser/parser-impl.h"
@@ -130,6 +131,9 @@ void ListitemParser::parse(RootElement *root, const char *buffer,
         listitem->setAttribute("content", region);
         ParserResult<Listitem> result{resultType, listitem};
         _results.push_back(result);
+
+        // checkbox
+        parseCheckbox(listitem, buffer, size, cursor);
 
         // logs
         log() << "xxxxxxx listitem xxxxxxx" << std::endl;

@@ -4,8 +4,7 @@
 #include <string>
 #include <variant>
 namespace orgcpp {
-using AttributeValue =
-    std::variant<Region, std::string, int, float>;
+using AttributeValue = std::variant<Region, std::string, int, float, bool>;
 class Attribute {
 public:
   Attribute();

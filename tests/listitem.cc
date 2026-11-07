@@ -122,4 +122,28 @@ TEST_CASE("listitem parsing should work properly", "[orgcpp][listitem]") {
     REQUIRE(listitem3);
     REQUIRE(listitem4);
   }
+  SECTION("when parsing a checkbox listitem", "[checkbox]") {
+    RootElement *root =
+      orgcpp::parse("./resources/07-listitem/07-checkbox-listitem.org");
+    Listitem *listitem1 = root->get<Listitem>(0);
+    Listitem *listitem2 = root->get<Listitem>(1);
+    
+    REQUIRE(listitem1);
+    std::string head1 =
+      listitem1->getAttribute<Region>("head")->string();
+    REQUIRE(head1 == "Listitem 1");
+    REQUIRE(listitem1->isCheckbox());
+    bool *checkbox1 =
+      listitem1->getAttribute<bool>("checkbox");
+    REQUIRE(*checkbox1 == false);
+
+    REQUIRE(listitem2);
+    std::string head2 =
+      listitem2->getAttribute<Region>("head")->string();
+    REQUIRE(head2 == "Listitem 2");
+    REQUIRE(listitem2->isCheckbox());
+    bool *checkbox2 =
+      listitem2->getAttribute<bool>("checkbox");
+    REQUIRE(*checkbox2 == true);
+  }    
 }

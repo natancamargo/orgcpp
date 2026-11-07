@@ -3,6 +3,7 @@
 #include "element/headline.h"
 #include "element/root.h"
 #include "parser/parser.h"
+#include "attribute/checkbox.h"
 #include "parser/parser-impl.h"
 #include "util/log.h"
 #include <cstddef>
@@ -82,6 +83,9 @@ void HeadlineParser::parse(RootElement *root, const char *buffer,
             break;
           }
         }
+        // checkbox
+        parseCheckbox(headline, buffer, size, cursor);
+        // logs
         log() << "xxxxxxx headline xxxxxxx" << std::endl;
         log() << "------- level ------" << std::endl;
         log() << numberOfWildcards << std::endl;
