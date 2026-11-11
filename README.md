@@ -4,8 +4,55 @@
 Small library to parse org-mode files.
 
 ### Usage
-TODO
+#### Usage 1: headlines, listitems and texts
+Given the below input:
+```txt
+* Headline 1
+Text headline 1
+- Listitem 1
+  Text listitem 1
+** Headline 2
+- Listitem 2
+  - Listitem 3
+    Text listitem 2
+* Headline 3
+- Listitem 4
+```
 
+The parser can be used like:
+```c++
+RootElement *root   = orgcpp::parse("./path/to/org/file");
+Headline *headline1 = root->get<Headline>(0);
+Text     *text1     = headline1->get<Text>(0);
+Listitem *listitem1 = headline1->get<Listitem>(1);
+Headline *headline2 = headline1->get<Headline>(2);
+Listitem *listitem2 = headline2->get<Listitem>(0);
+Listitem *listitem3 = listitem2->get<Listitem>(0);
+...
+```
+
+Every element (Headline, Listitem, Text...) has the attributes content and head.
+```
+Text *text1 = headline1->get<Text>(0);
+std::string head = text1->getAttribute<Region>("head")->string();
+std::string content = text1->getAttribute<Region>("content")->string();
+```
+
+Some elements like Headline and Listitem has a body:
+```
+Listitem *listitemm1 = headline1->get<Listitem>(0);
+std::string head = text1->getAttribute<Region>("head")->string();
+std::string body = text1->getAttribute<Region>("body")->string();
+```
+
+### Debugging information
+To see debug information about the parsing process, surround the parse function
+with `config::debug = true` like:
+```c++
+config::debug = true;
+RootElement *root = orgcpp::parse("./path/to/org/file");
+config::debug = false;
+```
 ### Build
 ---
 #### Install VCPKG
