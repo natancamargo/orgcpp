@@ -50,10 +50,10 @@ TEST_CASE("listitem parsing should work properly", "[orgcpp][listitem]") {
   SECTION("when parsing a compound listitem", "[compound]") {
     RootElement *root =
         orgcpp::parse("./resources/07-listitem/04-compound-listitem.org");
-    Listitem *listitem1 = root->get<Listitem>(0);
-    Listitem *listitem2 = listitem1->get<Listitem>(0);
-    Listitem *listitem3 = root->get<Listitem>(1);
-    Listitem *listitem4 = root->get<Listitem>(2);
+    Listitem *listitem1 = root->get<Listitem>(1);
+    Listitem *listitem2 = listitem1->get<Listitem>(1);
+    Listitem *listitem3 = root->get<Listitem>(2);
+    Listitem *listitem4 = root->get<Listitem>(3);
 
     REQUIRE(listitem1);
     std::string head1 = listitem1->getAttribute<Region>("head")->string();
@@ -108,8 +108,8 @@ TEST_CASE("listitem parsing should work properly", "[orgcpp][listitem]") {
     RootElement *root =
         orgcpp::parse("./resources/07-listitem/06-headline-listitem.org");
     Headline *headline1 = root->get<Headline>(0);
-    Listitem *listitem1 = headline1->get<Listitem>(0);
-    Headline *headline2 = headline1->get<Headline>(1);
+    Listitem *listitem1 = headline1->get<Listitem>(1);
+    Headline *headline2 = headline1->get<Headline>(2);
     Listitem *listitem2 = headline2->get<Listitem>(0);
     Listitem *listitem3 = listitem2->get<Listitem>(0);
     Headline *headline3 = root->get<Headline>(1);

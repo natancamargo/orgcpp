@@ -2,5 +2,5 @@
 Text 1
 :DRAWER:
 Text 2
-:END
+:END:
 Text 3

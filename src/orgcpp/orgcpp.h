@@ -10,6 +10,7 @@
 #include "element/headline.h"
 #include "element/listitem.h"
 #include "element/link.h"
+#include "element/text.h"
 #include "element/root.h"
 #include "parser/headline-parser.h"
 #include "parser/listitem-parser.h"

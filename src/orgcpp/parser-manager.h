@@ -5,6 +5,7 @@
 #include "parser/listitem-parser.h"
 #include "parser/parser-impl.h"
 #include "parser/parser.h"
+#include "parser/text-parser.h"
 namespace orgcpp {
 class ParserManager {
 public:
@@ -20,5 +21,7 @@ private:
   HeadlineParser _headlineParser;
   ListitemParser _listitemParser;
   LinkParser _linkParser;
+  TextParser _textParser;
 };
+std::string getHead(Element *element);
 } // namespace orgcpp

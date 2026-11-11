@@ -1,0 +1,6 @@
+normal
+*bold*
+/italic/
+_italic_
+=verbatim=
+~code~

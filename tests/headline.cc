@@ -23,10 +23,10 @@ TEST_CASE("headline parsing should work properly", "[orgcpp][headline]") {
   SECTION("when parsing a compound headline", "[compound]") {
     RootElement *root =
         orgcpp::parse("./resources/01-headline/02-compound-headline.org");
-    Headline *headline1 = root->get<Headline>(0);
-    Headline *headline2 = root->get<Headline>(0)->get<Headline>(0);
-    Headline *headline3 = root->get<Headline>(1);
-    Headline *headline4 = root->get<Headline>(2);
+    Headline *headline1 = root->get<Headline>(1);
+    Headline *headline2 = headline1->get<Headline>(1);
+    Headline *headline3 = root->get<Headline>(2);
+    Headline *headline4 = root->get<Headline>(3);
 
     REQUIRE(headline1);
     std::string head1 =

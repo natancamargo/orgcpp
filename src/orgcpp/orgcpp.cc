@@ -67,7 +67,7 @@ std::tuple<bool, std::shared_ptr<std::ifstream>>
 openFile(const std::string &path) {
   std::shared_ptr<std::ifstream> in = std::make_shared<std::ifstream>(path);
   if (!in->is_open()) {
-    perror("Error while opening the file.\n");
+    perror("Error opening the file.\n");
     return std::make_tuple(false, in);
   }
 
@@ -93,7 +93,7 @@ bool readFileByBlocks(
       callback(buffer.data(), size);
     }
   } catch (const std::ifstream::failure &e) {
-    log() << std::format("Error: {}\nError code: {}\n", e.what(),
+    std::cerr << std::format("Error: {}\nError code: {}\n", e.what(),
                          e.code().value());
     return false;
   }

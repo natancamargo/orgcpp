@@ -1,3 +1,0 @@
-- [2/2] ListItem 1
-  - [X] ListItem 2
-  - [X] ListItem 3
