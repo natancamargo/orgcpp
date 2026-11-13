@@ -39,18 +39,36 @@ Listitem *listitem3 = listitem2->get<Listitem>(0);
 </tr>
 </table>
 
-Every element (Headline, Listitem, Text...) has the attributes content and head.
+##### Headline
+Has attributes head and body.
 ```
-Text *text1 = headline1->get<Text>(0);
-std::string head = text1->getAttribute<Region>("head")->string();
-std::string content = text1->getAttribute<Region>("content")->string();
+std::string head = headline1->getAttribute<Region>("head")->string();
+std::string body = headline1->getAttribute<Region>("body")->string();
+```
+Optionally has attribute content representing all its content (head+body):
+```
+std::string body = headline1->getAttribute<Region>("content")->string();
 ```
 
-Some elements like Headline and Listitem has a body:
+##### Listitem
+Also has attributes head and body.
 ```
-Listitem *listitemm1 = headline1->get<Listitem>(0);
+std::string head = listitem1->getAttribute<Region>("head")->string();
+std::string body = listitem1->getAttribute<Region>("body")->string();
+```
+Also has the attribute content:
+```
+std::string body = headline1->getAttribute<Region>("content")->string();
+```
+
+##### Text
+Has the attribute content
+```
+std::string content = text1->getAttribute<Region>("content")->string();
+```
+Also has the attribute head, but it is just a slice of the content:
+```
 std::string head = text1->getAttribute<Region>("head")->string();
-std::string body = text1->getAttribute<Region>("body")->string();
 ```
 
 ### Debugging information
