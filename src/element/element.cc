@@ -70,7 +70,7 @@ Element *Element::get(std::size_t index) const {
 
 void Element::addChild(Element *element) {
   _children.push_back(element);
-  element->setParent(element);
+  element->setParent(this);
 }
 
 void Element::removeChild(Element *element) {

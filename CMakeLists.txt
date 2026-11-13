@@ -46,11 +46,13 @@ add_library(${LIBRARY_NAME} STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/listitem.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/root.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/headline.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/element/drawer.cc"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/headline-parser.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/listitem-parser.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/link-parser.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/text-parser.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/drawer-parser.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/parser.cc"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/region/region.cc"
@@ -82,6 +84,7 @@ add_executable(${TEST_NAME}
   "${CMAKE_CURRENT_SOURCE_DIR}/tests/listitem.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/tests/link.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/tests/text.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/tests/drawer.cc"
 )
 target_link_libraries(${TEST_NAME} PUBLIC ${LIBRARY_NAME} Catch2::Catch2WithMain)
 set_target_properties(${TEST_NAME} PROPERTIES

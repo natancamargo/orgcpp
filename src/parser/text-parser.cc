@@ -11,7 +11,7 @@ void TextParser::parse(RootElement *root, const char *buffer,
                        const std::size_t size, std::size_t cursor) {
   _results.clear();
   char lastCharacter = 0x00;
-  bool lineBeginMark = false;
+  bool mark = false;
   bool begin = false;
   bool middle = false;
   bool end = false;
@@ -21,6 +21,7 @@ void TextParser::parse(RootElement *root, const char *buffer,
   bool beginFile = false;
   bool endFile = false;
   bool lineBegin = false;
+  char charAfterSpaces = 0x00;
   std::size_t indentation = 0;
   std::size_t lastIndentation = 0;
   std::size_t indentationChanged = 0;
@@ -30,18 +31,21 @@ void TextParser::parse(RootElement *root, const char *buffer,
   for (std::size_t i = 0; i < size; i++) {
     beginFile = i == 0;
     endFile = i == size - 1;
+    charAfterSpaces = getCharAfterSpaces(buffer, size, i);
     lineBegin = beginFile || lastCharacter == '\n';
     indentation = lineBegin ? lineIndentation(buffer, size, i) : indentation;
     indentationChanged = (indentation != lastIndentation) && !beginFile;
-    lineBeginMark =
+    mark =
         lineBegin &&
         (isBeginHeadline(buffer, size, i) || isBeginListitem(buffer, size, i) ||
-         buffer[i] == ':' || buffer[i] == '#' || buffer[i] == '|' ||
-         buffer[i] == '\\' || buffer[i] == '[' || buffer[i] == '<');
+         charAfterSpaces == ':' || charAfterSpaces == '#' ||
+         charAfterSpaces == '|' || charAfterSpaces == '\\' ||
+         charAfterSpaces == '[' || charAfterSpaces == '<');
 
-    begin = (lineBegin && !lineBeginMark && (!lastMiddle || indentationChanged));
+    begin =
+        (lineBegin && !mark && (!lastMiddle || indentationChanged));
     middle = (lastMiddle && (!lastEnd || lastBegin)) || begin;
-    end = lastMiddle && (lineBeginMark || endFile || indentationChanged);
+    end = lastMiddle && (mark || endFile || indentationChanged);
 
     if (end) {
       region.second = i + cursor;

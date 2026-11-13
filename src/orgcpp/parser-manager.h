@@ -1,5 +1,6 @@
 #pragma once
 
+#include "parser/drawer-parser.h"
 #include "parser/headline-parser.h"
 #include "parser/link-parser.h"
 #include "parser/listitem-parser.h"
@@ -9,8 +10,8 @@
 namespace orgcpp {
 class ParserManager {
 public:
-  std::vector<Element *>
-  treefyResults(std::vector<ParserResult<Element>> treeFreeResults);
+  void treefyResults(RootElement *root,
+                     std::vector<ParserResult<Element>> treeFreeResults);
   template <typename T>
   void collectResults(Parser<T> &parser,
                       std::vector<ParserResult<Element>> &results);
@@ -22,6 +23,7 @@ private:
   ListitemParser _listitemParser;
   LinkParser _linkParser;
   TextParser _textParser;
+  DrawerParser _drawerParser;
 };
 std::string getHead(Element *element);
 } // namespace orgcpp
