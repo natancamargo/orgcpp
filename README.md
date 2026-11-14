@@ -14,13 +14,13 @@ Small library to parse org-mode files.
 <td>
 <pre>
 * Headline 1
-Text headline 1
+Text 1
 - Listitem 1
-  Text listitem 1
+  Text 2
 ** Headline 2
 - Listitem 2
   - Listitem 3
-    Text listitem 2
+    Text 3
 * Headline 3
 - Listitem 4
 </pre>
@@ -31,10 +31,11 @@ RootElement *root   = orgcpp::parse("./path/to/org/file");
 Headline *headline1 = root->get<Headline>(0);
 Text     *text1     = headline1->get<Text>(0);
 Listitem *listitem1 = headline1->get<Listitem>(1);
+Text     *text2     = listitem1>get<Text>(0);
 Headline *headline2 = headline1->get<Headline>(2);
 Listitem *listitem2 = headline2->get<Listitem>(0);
 Listitem *listitem3 = listitem2->get<Listitem>(0);
-Text     *text2     = listitem3>get<Text>(0);
+Text     *text3     = listitem3>get<Text>(0);
 Headline *headline3 = root->get<Headline>(1);
 Listitem *listitem4 = headline3->get<Listitem>(0);
 </pre>
