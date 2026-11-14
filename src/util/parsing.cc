@@ -91,14 +91,133 @@ std::size_t lineIndentation(const char *buffer, const std::size_t size,
   return spaces;
 }
 char getCharAfterSpaces(const char *buffer, const std::size_t size,
-                     const std::size_t offset) {
+                        const std::size_t offset) {
   for (std::size_t i = offset; i < size; i++) {
     if (buffer[i] == ' ') {
       continue;
     } else {
-      return buffer[i];      
+      return buffer[i];
     }
   }
   return 0x00;
+}
+Region getBlockBeginName(RootElement *root, const char *buffer,
+                         const std::size_t size, const std::size_t offset,
+                         const std::size_t cursor) {
+  Region region{root->getDocument()};
+  std::string pattern = "#+begin_";
+  std::size_t matchCount = 0;
+  bool beginName = false;
+  bool endName = false;
+  for (std::size_t i = offset; i < size; i++) {
+    if (buffer[i] == ' ' && matchCount == 0) {
+      continue;
+    }
+    if (buffer[i] == '\n') {
+      break;
+    }
+    if (matchCount >= pattern.size()) {
+      if (!beginName) {
+        region.first = i + cursor;
+        beginName = true;
+      }
+      if (buffer[i] == ' ' && !endName) {
+        region.second = i + cursor;
+        endName = true;
+      }
+      if ((i < size - 1 && buffer[i + 1] == '\n') && !endName) {
+        region.second = i + cursor + 1;
+        endName = true;
+      }
+    } else {
+      if (buffer[i] == pattern[matchCount]) {
+        matchCount++;
+      } else {
+        break;
+      }
+    }
+  }
+  return region;
+}
+Region getBlockEndName(RootElement *root, const char *buffer,
+                       const std::size_t size, const std::size_t offset,
+                       const std::size_t cursor) {
+  Region region{root->getDocument()};
+  std::string pattern = "#+end_";
+  std::size_t matchCount = 0;
+  bool beginName = false;
+  for (std::size_t i = offset; i < size; i++) {
+    if (buffer[i] == ' ' && matchCount == 0) {
+      continue;
+    }
+    if (buffer[i] == '\n') {
+      break;
+    }
+    if (matchCount >= pattern.size()) {
+      if (!beginName) {
+        region.first = i + cursor;
+        beginName = true;
+      }
+      if (i == size - 1 || buffer[i + 1] == '\n') {
+        region.second = i + cursor + 1;
+      }
+    } else {
+      if (buffer[i] == pattern[matchCount]) {
+        matchCount++;
+      } else {
+        break;
+      }
+    }
+  }
+  return region;
+}
+Region getBlockType(RootElement *root, const char *buffer,
+                    const std::size_t size, const std::size_t offset,
+                    const std::size_t cursor) {
+  Region region{root->getDocument()};
+  bool beginName = false;
+  for (std::size_t i = offset; i < size; i++) {
+    if (buffer[i] == ' ') {
+      continue;
+    }
+    if (buffer[i] != ' ' && !beginName) {
+      region.first = i + cursor;
+      beginName = true;
+    }
+    if (buffer[i] == '\n') {
+      region.second = i + cursor;
+      break;
+    }
+  }
+  return region;
+}
+bool isBeginBlock(RootElement *root, const char *buffer, const std::size_t size,
+                  const std::size_t offset, const std::size_t cursor) {
+  Region region = getBlockBeginName(root, buffer, size, offset, cursor);
+  return region.second > 0;
+};
+bool isEndBlock(RootElement *root, const char *buffer, const std::size_t size,
+                const std::size_t offset, const std::size_t cursor) {
+  Region region = getBlockEndName(root, buffer, size, offset, cursor);
+  return region.second > 0;
+};
+std::size_t getLineBreakIndex(const char *buffer, const std::size_t size,
+                              const std::size_t offset) {
+  for (std::size_t i = offset; i < size; i++) {
+    if (buffer[i] == '\n') {
+      return i;
+    }
+  }
+  return 0;
+}
+std::size_t getLineBreakReversedIndex(const char *buffer,
+                                      const std::size_t size,
+                                      const std::size_t offset) {
+  for (std::size_t i = offset; i != 0; i--) {
+    if (buffer[i] == '\n') {
+      return i;
+    }
+  }
+  return size - 1;
 }
 } // namespace orgcpp

@@ -1,0 +1,10 @@
+#+begin_export ascii
+ascii
+#+end_export
+
+#+begin_example
+example
+#+end_example
+#+begin_custom
+custom
+#+end_custom

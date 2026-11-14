@@ -21,12 +21,6 @@ void DrawerParser::parse(RootElement *root, const char *buffer,
     beginFile = i == 0;
     beginLine = lastCharacter == '\n' || beginFile;
 
-    // begin = beginLine && !lastMiddle &&
-    //         isBeginDrawer(root, buffer, size, i, cursor);
-    // middle = (lastMiddle && !lastEnd) || begin;
-    // end = (lastMiddle && !lastEnd && beginLine &&
-    //        isEndDrawer(root, buffer, size, i, cursor));
-
     begin = beginLine && isBeginDrawer(root, buffer, size, i, cursor);
     end = beginLine &&
            isEndDrawer(root, buffer, size, i, cursor);
@@ -74,7 +68,6 @@ void populateDrawer(Drawer *drawer, RootElement *root, const char *buffer,
   Region bodyRegion{root->getDocument()};
   bodyRegion.first = headRegion.first + (headRegion.string().size() + 2);
   bodyRegion.second = region->second - 6;
-  drawer->setAttribute("head", headRegion);
   drawer->setAttribute("body", bodyRegion);
 }
 } // namespace orgcpp

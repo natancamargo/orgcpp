@@ -17,5 +17,7 @@ inline int blockSize = 64 * 1024;
 
 // should debug logs
 inline bool debug = false;
+// should debug logs of sort (too large)
+inline bool debugSort = false;
 } // namespace config
 } // namespace orgToAnki

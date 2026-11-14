@@ -10,4 +10,10 @@ std::ostream &log() {
   }
   return nullStream;
 };
+std::ostream &logSort() {
+  if (config::debugSort) {
+    return coutStream;
+  }
+  return nullStream;
+};
 } // namespace orgcpp

@@ -15,6 +15,8 @@ public:
 
   std::shared_ptr<std::ifstream> getDocument() const;
   void setDocument(std::shared_ptr<std::ifstream> document);
+
+  bool valid() const;    
 private:
   std::shared_ptr<std::ifstream> _document;
 };

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "parser/block-parser.h"
 #include "parser/drawer-parser.h"
 #include "parser/headline-parser.h"
 #include "parser/link-parser.h"
@@ -24,6 +25,7 @@ private:
   LinkParser _linkParser;
   TextParser _textParser;
   DrawerParser _drawerParser;
+  BlockParser _blockParser;
 };
 std::string getHead(Element *element);
 } // namespace orgcpp

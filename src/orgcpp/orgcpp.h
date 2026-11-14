@@ -12,9 +12,14 @@
 #include "element/link.h"
 #include "element/text.h"
 #include "element/drawer.h"
+#include "element/block.h"
 #include "element/root.h"
 #include "parser/headline-parser.h"
 #include "parser/listitem-parser.h"
+#include "parser/link-parser.h"
+#include "parser/text-parser.h"
+#include "parser/drawer-parser.h"
+#include "parser/block-parser.h"
 #include "parser/parser.h"
 
 namespace orgcpp {

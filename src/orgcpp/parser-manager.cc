@@ -77,7 +77,7 @@ void ParserManager::treefyResults(
                   [](Element *left, Element *right) {
                     std::string leftHead = getHead(left);
                     std::string rightHead = getHead(right);
-                    log() << std::format("sorting \"{}\" and \"{}\"", leftHead,
+                    logSort() << std::format("sorting \"{}\" and \"{}\"", leftHead,
                                          rightHead)
                           << std::endl;
                     Region *leftRegion = left->getAttribute<Region>("content");
@@ -103,10 +103,10 @@ void ParserManager::treefyResults(
     treefy(root, element2);
   }
   log() << "!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-
-  log() << "??????? sort ???????" << std::endl;
+  
+  logSort() << "??????? sort ???????" << std::endl;
   sort(root->getChildren());
-  log() << "??????????????????????" << std::endl;
+  logSort() << "??????????????????????" << std::endl;
 }
 template <typename T>
 void ParserManager::collectResults(
@@ -126,6 +126,7 @@ void ParserManager::parse(RootElement *root, const char *buffer,
   _linkParser.parse(root, buffer, size, cursor);
   _textParser.parse(root, buffer, size, cursor);
   _drawerParser.parse(root, buffer, size, cursor);
+  _blockParser.parse(root, buffer, size, cursor);
 
   // collect results
   collectResults(_headlineParser, results);
@@ -133,6 +134,7 @@ void ParserManager::parse(RootElement *root, const char *buffer,
   collectResults(_linkParser, results);
   collectResults(_textParser, results);
   collectResults(_drawerParser, results);
+  collectResults(_blockParser, results);
 
   // root attributes
   root->setAttribute("head", "root");
