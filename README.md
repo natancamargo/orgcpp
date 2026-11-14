@@ -34,6 +34,9 @@ Listitem *listitem1 = headline1->get<Listitem>(1);
 Headline *headline2 = headline1->get<Headline>(2);
 Listitem *listitem2 = headline2->get<Listitem>(0);
 Listitem *listitem3 = listitem2->get<Listitem>(0);
+Text     *text2     = listitem3>get<Text>(0);
+Headline *headline3 = root->get<Headline>(1);
+Listitem *listitem4 = headline3->get<Listitem>(0);
 </pre>
 </td>
 </tr>
