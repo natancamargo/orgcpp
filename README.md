@@ -5,7 +5,7 @@ Small library to parse org-mode files.
 
 ### Usage
 #### Usage 1: headlines, listitems and texts
-<table style="width: 320px;">
+<table>
 <tr>
 <th>Input</th>
 <th>AST</th>
@@ -102,7 +102,6 @@ config::debug = false;
 ```
 ### AST
 To print the AST of a document, use the print function:
-with `config::debug = true` like:
 ```c++
 RootElement *root = orgcpp::parse("./path/to/org/file");
 root->print();
