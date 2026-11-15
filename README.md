@@ -5,7 +5,7 @@ Small library to parse org-mode files.
 
 ### Usage
 #### Usage 1: headlines, listitems and texts
-<table>
+<table style="width: 320px;">
 <tr>
 <th>Input</th>
 <th>AST</th>
@@ -14,7 +14,7 @@ Small library to parse org-mode files.
 <tr>
 <td>
 <pre>
-
+...
 * Headline 1
 Text 1
 - Listitem 1
