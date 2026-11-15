@@ -27,5 +27,4 @@ private:
   DrawerParser _drawerParser;
   BlockParser _blockParser;
 };
-std::string getHead(Element *element);
 } // namespace orgcpp

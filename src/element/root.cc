@@ -1,6 +1,7 @@
 #include "element/root.h"
 
 namespace orgcpp {
+RootElement::RootElement() { _type = Type::ROOT; }
 const std::vector<std::string> &RootElement::getTodos() { return _todos; }
 void RootElement::setTodos(const std::vector<std::string> &todos) {
   _todos = todos;

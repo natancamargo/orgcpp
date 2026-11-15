@@ -48,7 +48,7 @@ TEST_CASE("block parsing should work properly", "[orgcpp][block]") {
   }
   SECTION("when parsing a compound block", "[compound]") {
     RootElement *root =
-        orgcpp::parse("./resources/03-block/04-compound-block.org");
+        orgcpp::parse("./resources/03-block/03-compound-block.org");
     Headline *headline = root->get<Headline>(0);
     REQUIRE(headline);    
     Block *block1 = headline->get<Block>(0);
@@ -68,5 +68,5 @@ TEST_CASE("block parsing should work properly", "[orgcpp][block]") {
     REQUIRE(head2 == "quote");
     std::string body2 = block2->getAttribute<Region>("body")->string();
     REQUIRE(body2 == "  quote");    
-  }  
+  }
 }

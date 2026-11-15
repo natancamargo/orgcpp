@@ -8,10 +8,11 @@ enum class TextType {
   ITALIC,
   VERBATIM,
   CODE
-};  
+};
 class Text : public Element {
+public:
+  Text();  
 protected:
-  Type _type = Type::TEXT;
   TextType _textType = TextType::NORMAL;
 };
 } // namespace orgcpp

@@ -6,12 +6,13 @@
 #include <optional>
 namespace orgcpp {
 enum class Type {
+  ROOT,  
   HEADLINE,
   DRAWER,
   BLOCK,
   TABLE,
   LINK,
-  LIST_ITEM,
+  LISTITEM,
   PROPERTIES,
   TAGS,
   DATES_TIMESTAMP,
@@ -52,6 +53,7 @@ public:
   void removeChild(Element *element);
   bool isChild(Element *element);
 
+  void print();  
 protected:  
   std::map<std::string, Attribute> _attributes;
   Element *_parent;

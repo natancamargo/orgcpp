@@ -48,6 +48,8 @@ add_library(${LIBRARY_NAME} STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/headline.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/drawer.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/block.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/element/link.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/element/text.cc"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/headline-parser.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/listitem-parser.cc"
@@ -59,6 +61,7 @@ add_library(${LIBRARY_NAME} STATIC
 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/region/region.cc"
 
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/util/element.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/util/parsing.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/util/string.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/util/log.cc"

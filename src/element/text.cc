@@ -1,3 +1,7 @@
 #include "element/text.h"
 
-namespace orgcpp {}
+namespace orgcpp {
+Text::Text() {
+  _type = Type::TEXT;  
+}
+}

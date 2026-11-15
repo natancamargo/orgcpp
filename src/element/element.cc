@@ -1,6 +1,7 @@
 #include "element/element.h"
 #include "attribute/attribute.h"
 #include <algorithm>
+#include <iostream>
 #include <memory>
 
 namespace orgcpp {
@@ -81,6 +82,67 @@ void Element::removeChild(Element *element) {
 bool Element::isChild(Element *element) {
   return std::find(_children.begin(), _children.end(), element) !=
          _children.end();
+}
+
+void Element::print() {
+  std::function<void(Element *, int)> printRecursive = [&](Element *element,
+                                                           int level) {
+    for (int i = 0; i < level; i++) {
+      std::cout << ' ';
+    }
+    Type type = element->getType();
+    switch (type) {
+    case Type::ROOT:
+      std::cout << "Root" << std::endl;
+      break;
+    case Type::HEADLINE:
+      std::cout << "Headline" << std::endl;
+      break;
+    case Type::DRAWER:
+      std::cout << "Drawer" << std::endl;
+      break;
+    case Type::BLOCK:
+      std::cout << "Block" << std::endl;
+      break;
+    case Type::TABLE:
+      std::cout << "Table" << std::endl;
+      break;
+    case Type::LINK:
+      std::cout << "Link" << std::endl;
+      break;
+    case Type::LISTITEM:
+      std::cout << "Listitem" << std::endl;
+      break;
+    case Type::PROPERTIES:
+      std::cout << "Properties" << std::endl;
+      break;
+    case Type::TAGS:
+      std::cout << "Tags" << std::endl;
+      break;
+    case Type::DATES_TIMESTAMP:
+      std::cout << "DatesTimestamp" << std::endl;
+      break;
+    case Type::DATES_SCHEDULED:
+      std::cout << "DatesScheduled" << std::endl;
+      break;
+    case Type::TEXT:
+      std::cout << "Text" << std::endl;
+      break;
+    case Type::LATEX:
+      std::cout << "Latex" << std::endl;
+      break;
+    case Type::FOOTNOTE:
+      std::cout << "Footnote" << std::endl;
+      break;
+    default:
+      std::cout << "Unkown" << std::endl;
+      break;
+    }
+    for (Element *child : element->getChildren()) {
+      printRecursive(child, level + 1);
+    }
+  };
+  printRecursive(this, 0);
 }
 
 } // namespace orgcpp

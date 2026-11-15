@@ -6,6 +6,7 @@
 namespace orgcpp {
 class RootElement : public Element {
 public:
+  RootElement();  
   const std::vector<std::string> &getTodos();
   void setTodos(const std::vector<std::string> &todos);
 

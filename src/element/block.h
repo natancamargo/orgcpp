@@ -4,7 +4,7 @@
 #include "element/element.h"
 namespace orgcpp {
 class Block : public Element {
-protected:
-  Type _type = Type::BLOCK;
+public:
+  Block();
 };
 } // namespace orgcpp

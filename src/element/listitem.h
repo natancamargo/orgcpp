@@ -5,9 +5,7 @@
 namespace orgcpp {
 class Listitem : public Element {
 public:
+  Listitem();  
   bool isCheckbox();
-
-protected:
-  Type _type = Type::HEADLINE;
 };
 } // namespace orgcpp

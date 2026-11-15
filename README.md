@@ -8,11 +8,13 @@ Small library to parse org-mode files.
 <table>
 <tr>
 <th>Input</th>
+<th>AST</th>
 <th>C++</th>
 </tr>
 <tr>
 <td>
 <pre>
+
 * Headline 1
 Text 1
 - Listitem 1
@@ -23,6 +25,21 @@ Text 1
     Text 3
 * Headline 3
 - Listitem 4
+</pre>
+</td>
+<td>
+<pre>
+Root
+ Headline
+  Text
+  Listitem
+   Text
+  Headline
+   Listitem
+    Listitem
+     Text
+ Headline
+  Listitem
 </pre>
 </td>
 <td>
@@ -82,6 +99,13 @@ with `config::debug = true` like:
 config::debug = true;
 RootElement *root = orgcpp::parse("./path/to/org/file");
 config::debug = false;
+```
+### AST
+To print the AST of a document, use the print function:
+with `config::debug = true` like:
+```c++
+RootElement *root = orgcpp::parse("./path/to/org/file");
+root->print();
 ```
 ### Build
 ---
