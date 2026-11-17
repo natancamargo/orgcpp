@@ -13,6 +13,7 @@
 #include "element/text.h"
 #include "element/drawer.h"
 #include "element/block.h"
+#include "element/keyword.h"
 #include "element/root.h"
 #include "parser/headline-parser.h"
 #include "parser/listitem-parser.h"

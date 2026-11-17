@@ -3,10 +3,9 @@
 #include "attribute/attribute.h"
 #include <functional>
 #include <map>
-#include <optional>
 namespace orgcpp {
 enum class Type {
-  ROOT,  
+  ROOT,
   HEADLINE,
   DRAWER,
   BLOCK,
@@ -19,7 +18,8 @@ enum class Type {
   DATES_SCHEDULED,
   TEXT,
   LATEX,
-  FOOTNOTE
+  FOOTNOTE,
+  KEYWORD  
 };
 class Element {
 public:

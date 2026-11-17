@@ -30,6 +30,13 @@ RootElement *parse(std::string path) {
         << std::endl;
   RootElement *root = allocator::allocate<RootElement>();
 
+  // root attributes
+  root->setAttribute("head", "root");
+  Region region{root->getDocument()};
+  region.first = 0;
+  region.second = std::filesystem::file_size(path);  
+  root->setAttribute("content", region);
+  
   // open file
   std::tuple<bool, std::shared_ptr<std::ifstream>> openFileResult =
       openFile(path);

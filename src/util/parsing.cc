@@ -220,4 +220,64 @@ std::size_t getLineBreakReversedIndex(const char *buffer,
   }
   return size - 1;
 }
+Region getKeywordName(RootElement *root, const char *buffer,
+                     const std::size_t size, const std::size_t offset,
+                     const std::size_t cursor) {
+  Region region{root->getDocument()};
+  std::string pattern = "#+";
+  std::size_t matchCount = 0;
+  bool beginName = false;
+  bool endName = false;
+  for (std::size_t i = offset; i < size; i++) {
+    if (buffer[i] == ' ' && matchCount == 0) {
+      continue;
+    }
+    if (buffer[i] == '\n') {
+      break;
+    }
+    if (matchCount >= pattern.size()) {
+      if (!beginName) {
+        region.first = i + cursor;
+        beginName = true;
+      }
+      if (buffer[i] == ':' && !endName) {
+        region.second = i + cursor;
+        endName = true;
+        break;        
+      }
+    } else {
+      if (buffer[i] == pattern[matchCount]) {
+        matchCount++;
+      } else {
+        break;
+      }
+    }
+  }
+  return region;
+}
+Region getKeywordValue(RootElement *root, const char *buffer,
+                     const std::size_t size, const std::size_t offset,
+                     const std::size_t cursor) {
+  Region region{root->getDocument()};
+  bool beginName = false;
+  for (std::size_t i = offset; i < size; i++) {
+    if (buffer[i] == ' ') {
+      continue;
+    }
+    if (buffer[i] != ' ' && !beginName) {
+      region.first = i + cursor;
+      beginName = true;
+    }
+    if (buffer[i] == '\n') {
+      region.second = i + cursor;
+      break;
+    }
+  }
+  return region;
+}
+bool isBeginKeyword(RootElement *root, const char *buffer, const std::size_t size,
+                  const std::size_t offset, const std::size_t cursor) {
+  Region region = getKeywordName(root, buffer, size, offset, cursor);
+  return region.valid();
+};
 } // namespace orgcpp

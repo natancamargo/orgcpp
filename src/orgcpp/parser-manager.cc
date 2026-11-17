@@ -127,6 +127,7 @@ void ParserManager::parse(RootElement *root, const char *buffer,
   _textParser.parse(root, buffer, size, cursor);
   _drawerParser.parse(root, buffer, size, cursor);
   _blockParser.parse(root, buffer, size, cursor);
+  _keywordParser.parse(root, buffer, size, cursor);
 
   // collect results
   collectResults(_headlineParser, results);
@@ -135,13 +136,7 @@ void ParserManager::parse(RootElement *root, const char *buffer,
   collectResults(_textParser, results);
   collectResults(_drawerParser, results);
   collectResults(_blockParser, results);
-
-  // root attributes
-  root->setAttribute("head", "root");
-  Region region{root->getDocument()};
-  region.first = 0;
-  region.second = size;  
-  root->setAttribute("content", region);
+  collectResults(_keywordParser, results);
 
   // treefy results into an ast like way
   treefyResults(root, results);

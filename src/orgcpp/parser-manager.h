@@ -3,6 +3,7 @@
 #include "parser/block-parser.h"
 #include "parser/drawer-parser.h"
 #include "parser/headline-parser.h"
+#include "parser/keyword-parser.h"
 #include "parser/link-parser.h"
 #include "parser/listitem-parser.h"
 #include "parser/parser-impl.h"
@@ -26,5 +27,6 @@ private:
   TextParser _textParser;
   DrawerParser _drawerParser;
   BlockParser _blockParser;
+  KeywordParser _keywordParser;
 };
 } // namespace orgcpp

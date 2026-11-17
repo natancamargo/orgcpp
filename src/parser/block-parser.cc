@@ -49,8 +49,7 @@ void BlockParser::parse(RootElement *root, const char *buffer,
         populateBlock(block, root, buffer, size, cursor);
         ParserResult<Block> result{type, block};
         _results.push_back(result);
-        i += 5;
-
+        
         // logs
         log() << "xxxxxxxxx block xxxxxxxxx" << std::endl;
         log() << "======= head =======" << std::endl;
