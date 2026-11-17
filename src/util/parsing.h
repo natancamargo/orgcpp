@@ -38,11 +38,17 @@ Region getKeywordName(RootElement *root, const char *buffer,
                       const std::size_t size, const std::size_t offset,
                       const std::size_t cursor);
 Region getKeywordValue(RootElement *root, const char *buffer,
-                      const std::size_t size, const std::size_t offset,
-                      const std::size_t cursor);
+                       const std::size_t size, const std::size_t offset,
+                       const std::size_t cursor);
 bool isBeginKeyword(RootElement *root, const char *buffer,
                     const std::size_t size, const std::size_t offset,
                     const std::size_t cursor);
+bool isBeginTable(const char *buffer, const std::size_t size,
+                  const std::size_t offset);
+bool isEndTable(const char *buffer, const std::size_t size,
+                const std::size_t offset);
+bool isFinalLine(const char *buffer, const std::size_t size,
+                 const std::size_t offset);
 std::size_t getLineBreakIndex(const char *buffer, const std::size_t size,
                               const std::size_t offset);
 std::size_t getLineBreakReversedIndex(const char *buffer,

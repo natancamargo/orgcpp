@@ -221,8 +221,8 @@ std::size_t getLineBreakReversedIndex(const char *buffer,
   return size - 1;
 }
 Region getKeywordName(RootElement *root, const char *buffer,
-                     const std::size_t size, const std::size_t offset,
-                     const std::size_t cursor) {
+                      const std::size_t size, const std::size_t offset,
+                      const std::size_t cursor) {
   Region region{root->getDocument()};
   std::string pattern = "#+";
   std::size_t matchCount = 0;
@@ -243,7 +243,7 @@ Region getKeywordName(RootElement *root, const char *buffer,
       if (buffer[i] == ':' && !endName) {
         region.second = i + cursor;
         endName = true;
-        break;        
+        break;
       }
     } else {
       if (buffer[i] == pattern[matchCount]) {
@@ -256,8 +256,8 @@ Region getKeywordName(RootElement *root, const char *buffer,
   return region;
 }
 Region getKeywordValue(RootElement *root, const char *buffer,
-                     const std::size_t size, const std::size_t offset,
-                     const std::size_t cursor) {
+                       const std::size_t size, const std::size_t offset,
+                       const std::size_t cursor) {
   Region region{root->getDocument()};
   bool beginName = false;
   for (std::size_t i = offset; i < size; i++) {
@@ -275,9 +275,24 @@ Region getKeywordValue(RootElement *root, const char *buffer,
   }
   return region;
 }
-bool isBeginKeyword(RootElement *root, const char *buffer, const std::size_t size,
-                  const std::size_t offset, const std::size_t cursor) {
+bool isBeginKeyword(RootElement *root, const char *buffer,
+                    const std::size_t size, const std::size_t offset,
+                    const std::size_t cursor) {
   Region region = getKeywordName(root, buffer, size, offset, cursor);
   return region.valid();
-};
+}
+bool isBeginTable(const char *buffer, const std::size_t size,
+                  const std::size_t offset) {
+  return getCharAfterSpaces(buffer, size, offset) == '|';
+}
+bool isEndTable(const char *buffer, const std::size_t size,
+                const std::size_t offset) {
+  return getCharAfterSpaces(buffer, size, offset) != '|' ||
+         isFinalLine(buffer, size, offset);
+}
+bool isFinalLine(const char *buffer, const std::size_t size,
+                 const std::size_t offset) {
+  std::size_t index = getLineBreakIndex(buffer, size, offset);
+  return index == 0 || index == size - 1;
+}
 } // namespace orgcpp

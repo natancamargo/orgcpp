@@ -8,6 +8,7 @@
 #include "parser/listitem-parser.h"
 #include "parser/parser-impl.h"
 #include "parser/parser.h"
+#include "parser/table-parser.h"
 #include "parser/text-parser.h"
 namespace orgcpp {
 class ParserManager {
@@ -28,5 +29,6 @@ private:
   DrawerParser _drawerParser;
   BlockParser _blockParser;
   KeywordParser _keywordParser;
+  TableParser _tableParser;
 };
 } // namespace orgcpp
