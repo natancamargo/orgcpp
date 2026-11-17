@@ -1,10 +1,126 @@
 [![](https://img.shields.io/badge/c++-black?logo=c++&style=for-the-badge)](https://learnxinyminutes.com/c++/)
 
 # Orgcpp
-Small library to parse org-mode files.
+
+A small library for parsing Org-mode files.
+
+### Basics
+
+#### Elements
+
+Elements are the base classes in orgcpp. They represent most of the parsable content of an Org-mode file in the chosen model.
+
+Below are the supported elements:
+
+##### Headline
+```org
+* Headline
+Text
+```
+
+##### Listitem
+```org
+- Listitem
+  Text
+```
+
+##### Text
+```org
+Text
+```
+
+##### Drawer
+```org
+:DRAWER:
+Text
+:END:
+```
+
+##### Block
+```org
+#+begin_src c++
+Text
+#+end_src
+```
+
+##### Table
+```org
+| header 1 | header 2 |
+| cell 1   | cell 2   |
+```
+
+##### Link
+```org
+[[link]]
+```
+
+##### Properties
+```org
+:PROPERTIES:
+:Property1: "abc"
+:Property2: "cba"
+:END:
+```
+
+##### Tags
+```org
+* Meeting with the French group                                        :work:
+```
+
+##### Dates
+```org
+* Headline
+<2006-11-01 Wed 19:15>
+
+* Headline
+DEADLINE: <2004-02-29 Sun>
+
+* Headline
+SCHEDULED: <2004-12-25 Sat>
+```
+
+#### Keyword
+```org
+#+KEY: VALUE
+```
+
+#### LaTeX
+```org
+\begin{equation}                        % arbitrary environments,
+x=\sqrt{b}                              % including tables, figures, etc.
+\end{equation}
+```
+
+#### Footnote
+```org
+[fn:text]
+```
+
+#### Attributes
+
+In orgcpp, elements have attributes that can be accessed as follows:
+
+```c++
+Region *headRegion = headline1->getAttribute<Region>("head");
+```
+
+> **Region**
+>
+> A Region is a tuple that points to the location of an attribute within the document.
+
+Some elements may not have certain attributes. To check whether an attribute is available, use something like:
+
+```c++
+Region *headRegion = headline1->getAttribute<Region>("head");
+if (headRegion) {
+    ...
+}
+```
 
 ### Usage
-#### Usage 1: headlines, listitems and texts
+
+#### Usage 1: Headlines, Listitems, and Texts
+
 <table>
 <tr>
 <th>Input</th>
@@ -44,88 +160,108 @@ Root
 </td>
 <td>
 <pre>
-RootElement *root   = orgcpp::parse("./path/to/org/file");
-Headline *headline1 = root->get<Headline>(0);
-Text     *text1     = headline1->get<Text>(0);
-Listitem *listitem1 = headline1->get<Listitem>(1);
-Text     *text2     = listitem1>get<Text>(0);
-Headline *headline2 = headline1->get<Headline>(2);
-Listitem *listitem2 = headline2->get<Listitem>(0);
-Listitem *listitem3 = listitem2->get<Listitem>(0);
-Text     *text3     = listitem3>get<Text>(0);
-Headline *headline3 = root->get<Headline>(1);
-Listitem *listitem4 = headline3->get<Listitem>(0);
+RootElement *root    = orgcpp::parse("./path/to/org/file");
+Headline    *headline1 = root->get<Headline>(0);
+Text        *text1     = headline1->get<Text>(0);
+Listitem    *listitem1 = headline1->get<Listitem>(1);
+Text        *text2     = listitem1->get<Text>(0);
+Headline    *headline2 = headline1->get<Headline>(2);
+Listitem    *listitem2 = headline2->get<Listitem>(0);
+Listitem    *listitem3 = listitem2->get<Listitem>(0);
+Text        *text3     = listitem3->get<Text>(0);
+Headline    *headline3 = root->get<Headline>(1);
+Listitem    *listitem4 = headline3->get<Listitem>(0);
 </pre>
 </td>
 </tr>
 </table>
 
 ##### Headline
-Has attributes head and body.
-```
+
+Has the `head` and `body` attributes:
+
+```c++
 std::string head = headline1->getAttribute<Region>("head")->string();
 std::string body = headline1->getAttribute<Region>("body")->string();
 ```
-Optionally has attribute content representing all its content (head+body):
-```
-std::string body = headline1->getAttribute<Region>("content")->string();
+
+It also has a `content` attribute, which represents its entire content (head + body):
+
+```c++
+std::string content = headline1->getAttribute<Region>("content")->string();
 ```
 
 ##### Listitem
-Also has attributes head and body.
-```
+
+Also has the `head` and `body` attributes:
+
+```c++
 std::string head = listitem1->getAttribute<Region>("head")->string();
 std::string body = listitem1->getAttribute<Region>("body")->string();
 ```
-Also has the attribute content:
-```
-std::string body = headline1->getAttribute<Region>("content")->string();
+
+It also has the `content` attribute:
+
+```c++
+std::string content = listitem1->getAttribute<Region>("content")->string();
 ```
 
 ##### Text
-Has the attribute content
-```
+
+Has the `content` attribute:
+
+```c++
 std::string content = text1->getAttribute<Region>("content")->string();
 ```
-Also has the attribute head, but it is just a slice of the content:
-```
+
+It also has the `head` attribute, which represents a slice of the content:
+
+```c++
 std::string head = text1->getAttribute<Region>("head")->string();
 ```
 
-### Debugging information
-To see debug information about the parsing process, surround the parse function
-with `config::debug = true` like:
+### Debugging Information
+
+To display debugging information about the parsing process, set `config::debug` to `true` before calling the parse function:
+
 ```c++
 config::debug = true;
 RootElement *root = orgcpp::parse("./path/to/org/file");
 config::debug = false;
 ```
+
 ### AST
-To print the AST of a document, use the print function:
+
+To print the AST of a document, use the `print()` function:
+
 ```c++
 RootElement *root = orgcpp::parse("./path/to/org/file");
 root->print();
 ```
+
 ### Build
----
+
 #### Install VCPKG
 
-Official Link: <https://vcpkg.io/en/index.html>
+Official website: <https://vcpkg.io/en/index.html>
 
-Export vcpkg to the path and export vcpkg root:
-```cmd
+Add vcpkg to your PATH and set the vcpkg root directory:
+
+```shell
 export VCPKG_ROOT=/path/to/vcpkg
 export PATH=$VCPKG_ROOT:$PATH
 ```
 
-Run bootstrap:
-```cmd
+Run the bootstrap script:
+
+```shell
 cd $VCPKG_ROOT
-.\vcpkg\bootstrap-vcpkg.bat # windows
+.\vcpkg\bootstrap-vcpkg.bat # Windows
 ./vcpkg/bootstrap-vcpkg.sh # Unix
 ```
 
-Then, build at repository root:
+Then, build the project from the repository root:
+
 ```shell
 export CC=/usr/bin/gcc
 export CXX=/usr/bin/g++
@@ -134,13 +270,13 @@ cmake --build build
 ```
 
 ### Run
----
+
 ```shell
 ./build/orgcpp/orgcpp-cli
 ```
 
 ### Debug
----
+
 ```shell
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G "Ninja"
 cmake --build build
@@ -148,7 +284,7 @@ gdb ./build/orgcpp/orgcpp-cli
 ```
 
 ### Tests
----
+
 ```shell
 cmake -S . -B build
 cmake --build build --target orgcpp-unit-tests
@@ -156,16 +292,18 @@ cmake --build build --target orgcpp-unit-tests
 ```
 
 ### Docs
----
+
 ```shell
 cmake -S . -B build
 cmake --build build --target docs
 ```
-> Link:
-> 
+
+> **Documentation:**
+>
 > https://natancamargo.github.io/orgcpp/html
 
-### Watch with nodemon
+### Watch with Nodemon
+
 ```shell
-npx nodemon --exec "cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G "Ninja"  && cmake --build build && ./build/orgcpp/orgcpp-unit-tests" --watch src -e cpp,hpp,txt
+npx nodemon --exec 'cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G "Ninja" && cmake --build build && ./build/orgcpp/orgcpp-unit-tests' --watch src -e cpp,hpp,txt
 ```
