@@ -8,7 +8,7 @@ A small library for parsing Org-mode files.
 
 #### Element
 
-Element is the base classes in orgcpp. They represent most of the parsable content of an Org-mode file in the chosen model.
+Element is the base class in orgcpp. It represent most of the parsable content of an Org-mode file in the chosen model.
 
 Below are the supported elements:
 
