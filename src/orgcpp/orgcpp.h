@@ -15,6 +15,7 @@
 #include "element/block.h"
 #include "element/keyword.h"
 #include "element/table.h"
+#include "element/property.h"
 #include "element/root.h"
 #include "parser/headline-parser.h"
 #include "parser/listitem-parser.h"

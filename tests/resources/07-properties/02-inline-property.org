@@ -1,2 +1,0 @@
-#+PROPERTY: var  foo
-#+PROPERTY: var+ bar

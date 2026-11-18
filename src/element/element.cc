@@ -113,8 +113,8 @@ void Element::print() {
     case Type::LISTITEM:
       std::cout << "Listitem" << std::endl;
       break;
-    case Type::PROPERTIES:
-      std::cout << "Properties" << std::endl;
+    case Type::PROPERTY:
+      std::cout << "Property" << std::endl;
       break;
     case Type::TAGS:
       std::cout << "Tags" << std::endl;

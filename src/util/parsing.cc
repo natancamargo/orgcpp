@@ -184,7 +184,7 @@ Region getBlockType(RootElement *root, const char *buffer,
       region.first = i + cursor;
       beginName = true;
     }
-    if (buffer[i] == '\n') {
+    if (buffer[i] == '\n' || i == size - 1) {
       region.second = i + cursor;
       break;
     }
@@ -294,5 +294,67 @@ bool isFinalLine(const char *buffer, const std::size_t size,
                  const std::size_t offset) {
   std::size_t index = getLineBreakIndex(buffer, size, offset);
   return index == 0 || index == size - 1;
+}
+Region getPropertyName(RootElement *root, const char *buffer,
+                       const std::size_t size, const std::size_t offset,
+                       const std::size_t cursor) {
+  std::size_t beginIndex = 0;
+  char nextCharacter = 0x00;
+  bool begin = false;
+  bool endOfFile = false;
+  Region headRegion{root->getDocument()};
+  for (std::size_t i = offset; i < size; i++) {
+    nextCharacter = i < size - 1 ? buffer[i + 1] : 0x00;
+    endOfFile = i == size - 1;
+    if (buffer[i] == '\n') {
+      break;
+    }
+    if (buffer[i] == ' ' && !begin) {
+      continue;
+    }
+    if (buffer[i] != ' ' && buffer[i] != ':' && !begin) {
+      break;
+    }
+    if (buffer[i] == ':' && !begin) {
+      begin = true;
+      beginIndex = i;
+      headRegion.first = i + cursor + 1;
+    }
+    if (buffer[i] == ' ' && begin) {
+      break;
+    }
+    if (buffer[i] == ':' && begin && i != beginIndex && nextCharacter != '\n' &&
+        !endOfFile) {
+      headRegion.second = i + cursor;
+      break;
+    }
+  }
+  return headRegion;
+}
+Region getPropertyValue(RootElement *root, const char *buffer,
+                        const std::size_t size, const std::size_t offset,
+                        const std::size_t cursor) {
+  Region region{root->getDocument()};
+  bool beginName = false;
+  for (std::size_t i = offset; i < size; i++) {
+    if (buffer[i] == ' ') {
+      continue;
+    }
+    if (buffer[i] != ' ' && !beginName) {
+      region.first = i + cursor;
+      beginName = true;
+    }
+    if (buffer[i] == '\n') {
+      region.second = i + cursor;
+      break;
+    }
+  }
+  return region;
+}
+bool isBeginProperty(RootElement *root, const char *buffer,
+                     const std::size_t size, const std::size_t offset,
+                     const std::size_t cursor) {
+  Region region = getPropertyName(root, buffer, size, offset, cursor);
+  return region.valid();
 }
 } // namespace orgcpp

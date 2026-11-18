@@ -17,7 +17,6 @@
 #include <ostream>
 #include <string>
 #include <tuple>
-#include <variant>
 #include <vector>
 
 namespace orgcpp {
@@ -29,6 +28,9 @@ RootElement *parse(std::string path) {
                        std::filesystem::path{path}.filename().string())
         << std::endl;
   RootElement *root = allocator::allocate<RootElement>();
+
+  // todo: small and fixed blocksize
+  config::blockSize = std::filesystem::file_size(path) + 1;  
 
   // root attributes
   root->setAttribute("head", "root");

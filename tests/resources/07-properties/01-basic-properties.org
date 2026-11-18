@@ -1,4 +1,4 @@
 :PROPERTIES:
-:Property1: "abc"
-:Property2: "cba"
+:KEY0: VALUE0
+:KEY1: VALUE1
 :END:
