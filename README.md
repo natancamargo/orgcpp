@@ -182,19 +182,19 @@ DEADLINE: <2004-02-29 Sun>
 SCHEDULED: <2004-12-25 Sat>
 ```
 
-#### Keyword
+##### Keyword
 ```org
 #+KEY: VALUE
 ```
 
-#### LaTeX
+##### LaTeX
 ```org
 \begin{equation}                        % arbitrary environments,
 x=\sqrt{b}                              % including tables, figures, etc.
 \end{equation}
 ```
 
-#### Footnote
+##### Footnote
 ```org
 [fn:text]
 ```
