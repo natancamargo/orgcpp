@@ -116,8 +116,8 @@ void Element::print() {
     case Type::PROPERTY:
       std::cout << "Property" << std::endl;
       break;
-    case Type::TAGS:
-      std::cout << "Tags" << std::endl;
+    case Type::TAG:
+      std::cout << "Tag" << std::endl;
       break;
     case Type::DATES_TIMESTAMP:
       std::cout << "DatesTimestamp" << std::endl;

@@ -101,6 +101,17 @@ char getCharAfterSpaces(const char *buffer, const std::size_t size,
   }
   return 0x00;
 }
+std::size_t getIndexAfterSpaces(const char *buffer, const std::size_t size,
+                                const std::size_t offset) {
+  for (std::size_t i = offset; i < size; i++) {
+    if (buffer[i] == ' ') {
+      continue;
+    } else {
+      return i;
+    }
+  }
+  return 0x00;
+}
 Region getBlockBeginName(RootElement *root, const char *buffer,
                          const std::size_t size, const std::size_t offset,
                          const std::size_t cursor) {
@@ -355,6 +366,41 @@ bool isBeginProperty(RootElement *root, const char *buffer,
                      const std::size_t size, const std::size_t offset,
                      const std::size_t cursor) {
   Region region = getPropertyName(root, buffer, size, offset, cursor);
+  return region.valid();
+}
+Region getTagName(RootElement *root, const char *buffer, const std::size_t size,
+                  const std::size_t offset, const std::size_t cursor) {
+  std::size_t beginIndex = 0;
+  bool begin = false;
+  Region region{root->getDocument()};
+  for (std::size_t i = offset; i < size; i++) {
+    if (buffer[i] == '\n') {
+      break;
+    }
+    if (buffer[i] == ' ' && !begin) {
+      continue;
+    }
+    if (buffer[i] != ' ' && buffer[i] != ':' && !begin) {
+      break;
+    }
+    if (buffer[i] == ':' && !begin) {
+      begin = true;
+      beginIndex = i;
+      region.first = i + cursor + 1;
+    }
+    if (buffer[i] == ' ' && begin) {
+      break;
+    }
+    if (buffer[i] == ':' && begin && i != beginIndex) {
+      region.second = i + cursor;
+      break;
+    }
+  }
+  return region;
+}
+bool isBeginTag(RootElement *root, const char *buffer, const std::size_t size,
+                const std::size_t offset, const std::size_t cursor) {
+  Region region = getTagName(root, buffer, size, offset, cursor);
   return region.valid();
 }
 } // namespace orgcpp

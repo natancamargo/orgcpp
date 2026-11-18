@@ -19,6 +19,8 @@ bool isEndDrawer(RootElement *root, const char *buffer, const std::size_t size,
                  const std::size_t offset, const std::size_t cursor);
 std::size_t lineIndentation(const char *buffer, const std::size_t size,
                             const std::size_t start);
+std::size_t getIndexAfterSpaces(const char *buffer, const std::size_t size,
+                                const std::size_t offset);
 char getCharAfterSpaces(const char *buffer, const std::size_t size,
                         const std::size_t offset);
 Region getBlockBeginName(RootElement *root, const char *buffer,
@@ -58,6 +60,10 @@ Region getPropertyValue(RootElement *root, const char *buffer,
 bool isBeginProperty(RootElement *root, const char *buffer,
                      const std::size_t size, const std::size_t offset,
                      const std::size_t cursor);
+Region getTagName(RootElement *root, const char *buffer, const std::size_t size,
+                  const std::size_t offset, const std::size_t cursor);
+bool isBeginTag(RootElement *root, const char *buffer, const std::size_t size,
+                const std::size_t offset, const std::size_t cursor);
 std::size_t getLineBreakIndex(const char *buffer, const std::size_t size,
                               const std::size_t offset);
 std::size_t getLineBreakReversedIndex(const char *buffer,

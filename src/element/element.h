@@ -13,7 +13,7 @@ enum class Type {
   LINK,
   LISTITEM,
   PROPERTY,
-  TAGS,
+  TAG,
   DATES_TIMESTAMP,
   DATES_SCHEDULED,
   TEXT,

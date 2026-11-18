@@ -1,3 +1,0 @@
-* Meeting with the French group                                        :work:
-** Summary by Frank                                              :boss:notes:
-*** TODO Prepare slides for him                                      :action:

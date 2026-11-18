@@ -130,6 +130,7 @@ void ParserManager::parse(RootElement *root, const char *buffer,
   _keywordParser.parse(root, buffer, size, cursor);
   _tableParser.parse(root, buffer, size, cursor);
   _propertyParser.parse(root, buffer, size, cursor);
+  _tagParser.parse(root, buffer, size, cursor);
 
   // collect results
   collectResults(_headlineParser, results);
@@ -141,6 +142,7 @@ void ParserManager::parse(RootElement *root, const char *buffer,
   collectResults(_keywordParser, results);
   collectResults(_tableParser, results);
   collectResults(_propertyParser, results);
+  collectResults(_tagParser, results);
 
   // treefy results into an ast like way
   treefyResults(root, results);
