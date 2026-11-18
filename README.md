@@ -4,6 +4,109 @@
 
 A small library for parsing Org-mode files.
 
+### Usage
+
+#### Usage 1: Headlines, Listitems, and Texts
+
+<table>
+<tr>
+<th>Input</th>
+<th>AST</th>
+<th>C++</th>
+</tr>
+<tr>
+<td>
+<pre>
+...
+* Headline 1
+Text 1
+- Listitem 1
+  Text 2
+** Headline 2
+- Listitem 2
+  - Listitem 3
+    Text 3
+* Headline 3
+- Listitem 4
+</pre>
+</td>
+<td>
+<pre>
+Root
+ Headline
+  Text
+  Listitem
+   Text
+  Headline
+   Listitem
+    Listitem
+     Text
+ Headline
+  Listitem
+</pre>
+</td>
+<td>
+<pre>
+RootElement *root    = orgcpp::parse("./path/to/org/file");
+Headline    *headline1 = root->get<Headline>(0);
+Text        *text1     = headline1->get<Text>(0);
+Listitem    *listitem1 = headline1->get<Listitem>(1);
+Text        *text2     = listitem1->get<Text>(0);
+Headline    *headline2 = headline1->get<Headline>(2);
+Listitem    *listitem2 = headline2->get<Listitem>(0);
+Listitem    *listitem3 = listitem2->get<Listitem>(0);
+Text        *text3     = listitem3->get<Text>(0);
+Headline    *headline3 = root->get<Headline>(1);
+Listitem    *listitem4 = headline3->get<Listitem>(0);
+</pre>
+</td>
+</tr>
+</table>
+
+##### Headline
+
+Has the `head` and `body` attributes:
+
+```c++
+std::string head = headline1->getAttribute<Region>("head")->string();
+std::string body = headline1->getAttribute<Region>("body")->string();
+```
+
+It also has a `content` attribute, which represents its entire content (head + body):
+
+```c++
+std::string content = headline1->getAttribute<Region>("content")->string();
+```
+
+##### Listitem
+
+Also has the `head` and `body` attributes:
+
+```c++
+std::string head = listitem1->getAttribute<Region>("head")->string();
+std::string body = listitem1->getAttribute<Region>("body")->string();
+```
+
+It also has the `content` attribute:
+
+```c++
+std::string content = listitem1->getAttribute<Region>("content")->string();
+```
+
+##### Text
+
+Has the `content` attribute:
+
+```c++
+std::string content = text1->getAttribute<Region>("content")->string();
+```
+
+It also has the `head` attribute, which represents a slice of the content:
+
+```c++
+std::string head = text1->getAttribute<Region>("head")->string();
+```
+
 ### Basics
 
 #### Element
@@ -117,110 +220,7 @@ if (headRegion) {
 }
 ```
 
-### Usage
-
-#### Usage 1: Headlines, Listitems, and Texts
-
-<table>
-<tr>
-<th>Input</th>
-<th>AST</th>
-<th>C++</th>
-</tr>
-<tr>
-<td>
-<pre>
-...
-* Headline 1
-Text 1
-- Listitem 1
-  Text 2
-** Headline 2
-- Listitem 2
-  - Listitem 3
-    Text 3
-* Headline 3
-- Listitem 4
-</pre>
-</td>
-<td>
-<pre>
-Root
- Headline
-  Text
-  Listitem
-   Text
-  Headline
-   Listitem
-    Listitem
-     Text
- Headline
-  Listitem
-</pre>
-</td>
-<td>
-<pre>
-RootElement *root    = orgcpp::parse("./path/to/org/file");
-Headline    *headline1 = root->get<Headline>(0);
-Text        *text1     = headline1->get<Text>(0);
-Listitem    *listitem1 = headline1->get<Listitem>(1);
-Text        *text2     = listitem1->get<Text>(0);
-Headline    *headline2 = headline1->get<Headline>(2);
-Listitem    *listitem2 = headline2->get<Listitem>(0);
-Listitem    *listitem3 = listitem2->get<Listitem>(0);
-Text        *text3     = listitem3->get<Text>(0);
-Headline    *headline3 = root->get<Headline>(1);
-Listitem    *listitem4 = headline3->get<Listitem>(0);
-</pre>
-</td>
-</tr>
-</table>
-
-##### Headline
-
-Has the `head` and `body` attributes:
-
-```c++
-std::string head = headline1->getAttribute<Region>("head")->string();
-std::string body = headline1->getAttribute<Region>("body")->string();
-```
-
-It also has a `content` attribute, which represents its entire content (head + body):
-
-```c++
-std::string content = headline1->getAttribute<Region>("content")->string();
-```
-
-##### Listitem
-
-Also has the `head` and `body` attributes:
-
-```c++
-std::string head = listitem1->getAttribute<Region>("head")->string();
-std::string body = listitem1->getAttribute<Region>("body")->string();
-```
-
-It also has the `content` attribute:
-
-```c++
-std::string content = listitem1->getAttribute<Region>("content")->string();
-```
-
-##### Text
-
-Has the `content` attribute:
-
-```c++
-std::string content = text1->getAttribute<Region>("content")->string();
-```
-
-It also has the `head` attribute, which represents a slice of the content:
-
-```c++
-std::string head = text1->getAttribute<Region>("head")->string();
-```
-
-### Debugging Information
+#### Debugging Information
 
 To display debugging information about the parsing process, set `config::debug` to `true` before calling the parse function:
 
@@ -230,7 +230,7 @@ RootElement *root = orgcpp::parse("./path/to/org/file");
 config::debug = false;
 ```
 
-### AST
+#### AST
 
 To print the AST of a document, use the `print()` function:
 
