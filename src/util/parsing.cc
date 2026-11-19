@@ -539,4 +539,42 @@ bool isEndLatex(RootElement *root, const char *buffer, const std::size_t size,
   Region region = getLatexEndName(root, buffer, size, offset, cursor);
   return region.second > 0;
 }
+Region getFootnoteValue(RootElement *root, const char *buffer,
+                    const std::size_t size, const std::size_t offset,
+                    const std::size_t cursor) {
+  Region region{root->getDocument()};
+  std::string pattern = "[fn";
+  std::size_t matchCount = 0;
+  bool beginName = false;
+  for (std::size_t i = offset; i < size; i++) {
+    if (buffer[i] == ' ' && matchCount == 0) {
+      continue;
+    }
+    if (buffer[i] == '\n') {
+      break;
+    }
+    if (matchCount >= pattern.size()) {
+      if (!beginName) {
+        region.first = i + cursor;
+        beginName = true;
+      }
+      if (buffer[i] == ']') {
+        region.second = i + cursor;
+        break;
+      }
+    } else {
+      if (buffer[i] == pattern[matchCount]) {
+        matchCount++;
+      } else {
+        break;
+      }
+    }
+  }
+  return region;
+}
+bool isBeginFootnote(RootElement *root, const char *buffer, const std::size_t size,
+                 const std::size_t offset, const std::size_t cursor) {
+  Region region = getFootnoteValue(root, buffer, size, offset, cursor);
+  return region.second > 0;
+}
 } // namespace orgcpp

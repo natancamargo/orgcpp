@@ -56,6 +56,7 @@ add_library(${LIBRARY_NAME} STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/tag.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/date.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/element/latex.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/element/footnote.cc"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/headline-parser.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/listitem-parser.cc"
@@ -69,6 +70,7 @@ add_library(${LIBRARY_NAME} STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/tag-parser.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/date-parser.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/latex-parser.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/footnote-parser.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/parser/parser.cc"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/region/region.cc"
@@ -109,6 +111,7 @@ add_executable(${TEST_NAME}
   "${CMAKE_CURRENT_SOURCE_DIR}/tests/tag.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/tests/date.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/tests/latex.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/tests/footnote.cc"
 )
 target_link_libraries(${TEST_NAME} PUBLIC ${LIBRARY_NAME} Catch2::Catch2WithMain)
 set_target_properties(${TEST_NAME} PROPERTIES

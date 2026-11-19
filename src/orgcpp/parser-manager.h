@@ -14,6 +14,7 @@
 #include "parser/tag-parser.h"
 #include "parser/date-parser.h"
 #include "parser/latex-parser.h"
+#include "parser/footnote-parser.h"
 namespace orgcpp {
 class ParserManager {
 public:
@@ -38,5 +39,6 @@ private:
   TagParser _tagParser;
   DateParser _dateParser;
   LatexParser _latexParser;
+  FootnoteParser _footnoteParser;
 };
 } // namespace orgcpp

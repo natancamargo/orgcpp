@@ -81,6 +81,12 @@ bool isBeginLatex(RootElement *root, const char *buffer, const std::size_t size,
                   const std::size_t offset, const std::size_t cursor);
 bool isEndLatex(RootElement *root, const char *buffer, const std::size_t size,
                 const std::size_t offset, const std::size_t cursor);
+Region getFootnoteValue(RootElement *root, const char *buffer,
+                        const std::size_t size, const std::size_t offset,
+                        const std::size_t cursor);
+bool isBeginFootnote(RootElement *root, const char *buffer,
+                     const std::size_t size, const std::size_t offset,
+                     const std::size_t cursor);
 std::size_t getLineBreakIndex(const char *buffer, const std::size_t size,
                               const std::size_t offset);
 std::size_t getLineBreakReversedIndex(const char *buffer,
