@@ -165,12 +165,12 @@ Text
 :END:
 ```
 
-##### Tags
+##### Tag
 ```org
 * Meeting with the French group                                        :work:
 ```
 
-##### Dates
+##### Date
 ```org
 * Headline
 <2006-11-01 Wed 19:15>
