@@ -206,12 +206,12 @@ bool isBeginBlock(RootElement *root, const char *buffer, const std::size_t size,
                   const std::size_t offset, const std::size_t cursor) {
   Region region = getBlockBeginName(root, buffer, size, offset, cursor);
   return region.second > 0;
-};
+}
 bool isEndBlock(RootElement *root, const char *buffer, const std::size_t size,
                 const std::size_t offset, const std::size_t cursor) {
   Region region = getBlockEndName(root, buffer, size, offset, cursor);
   return region.second > 0;
-};
+}
 std::size_t getLineBreakIndex(const char *buffer, const std::size_t size,
                               const std::size_t offset) {
   for (std::size_t i = offset; i < size; i++) {
@@ -403,8 +403,9 @@ bool isBeginTag(RootElement *root, const char *buffer, const std::size_t size,
   Region region = getTagName(root, buffer, size, offset, cursor);
   return region.valid();
 }
-Region getDateValue(RootElement *root, const char *buffer, const std::size_t size,
-                  const std::size_t offset, const std::size_t cursor) {
+Region getDateValue(RootElement *root, const char *buffer,
+                    const std::size_t size, const std::size_t offset,
+                    const std::size_t cursor) {
   bool begin = false;
   Region region{root->getDocument()};
   for (std::size_t i = offset; i < size; i++) {
@@ -413,10 +414,10 @@ Region getDateValue(RootElement *root, const char *buffer, const std::size_t siz
     }
     if (buffer[i] == '<' && !begin) {
       begin = true;
-      region.first = i + cursor + 1;      
+      region.first = i + cursor + 1;
     }
     if (buffer[i] == '>' && begin) {
-      region.second = i + cursor;      
+      region.second = i + cursor;
       break;
     }
   }
@@ -425,22 +426,22 @@ Region getDateValue(RootElement *root, const char *buffer, const std::size_t siz
 Region getDatePre(RootElement *root, const char *buffer, const std::size_t size,
                   const std::size_t offset, const std::size_t cursor) {
   Region region{root->getDocument()};
-  for (std::size_t i = offset; i < size; i++) {    
+  for (std::size_t i = offset; i < size; i++) {
     if (buffer[i] == '\n' || buffer[i] == '<') {
       break;
     }
     if (i == offset) {
-      region.first = i + cursor;      
+      region.first = i + cursor;
     }
     if (buffer[i] == ':') {
-      region.second = i + cursor;      
+      region.second = i + cursor;
       break;
     }
   }
   return region;
 }
 bool isBeginDate(RootElement *root, const char *buffer, const std::size_t size,
-                  const std::size_t offset, const std::size_t cursor) {
+                 const std::size_t offset, const std::size_t cursor) {
   bool begin = false, beginDate = false;
   Region region{root->getDocument()};
   for (std::size_t i = offset; i < size; i++) {
@@ -451,10 +452,91 @@ bool isBeginDate(RootElement *root, const char *buffer, const std::size_t size,
       begin = true;
     }
     if (buffer[i] == '>' && begin) {
-      beginDate = true;      
+      beginDate = true;
       break;
     }
   }
   return beginDate;
+}
+Region getLatexBeginName(RootElement *root, const char *buffer,
+                         const std::size_t size, const std::size_t offset,
+                         const std::size_t cursor) {
+  Region region{root->getDocument()};
+  std::string pattern = "\\begin{";
+  std::size_t matchCount = 0;
+  bool beginName = false;
+  bool endName = false;
+  for (std::size_t i = offset; i < size; i++) {
+    if (buffer[i] == ' ' && matchCount == 0) {
+      continue;
+    }
+    if (buffer[i] == '\n') {
+      break;
+    }
+    if (matchCount >= pattern.size()) {
+      if (!beginName) {
+        region.first = i + cursor;
+        beginName = true;
+      }
+      if (buffer[i] == '}') {
+        region.second = i + cursor;
+        endName = true;
+      }
+      if ((i < size - 1 && buffer[i + 1] == '\n') && !endName) {
+        region.second = i + cursor + 1;
+        endName = true;
+      }
+    } else {
+      if (buffer[i] == pattern[matchCount]) {
+        matchCount++;
+      } else {
+        break;
+      }
+    }
+  }
+  return region;
+}
+Region getLatexEndName(RootElement *root, const char *buffer,
+                       const std::size_t size, const std::size_t offset,
+                       const std::size_t cursor) {
+  Region region{root->getDocument()};
+  std::string pattern = "\\end{";
+  std::size_t matchCount = 0;
+  bool beginName = false;
+  for (std::size_t i = offset; i < size; i++) {
+    if (buffer[i] == ' ' && matchCount == 0) {
+      continue;
+    }
+    if (buffer[i] == '\n') {
+      break;
+    }
+    if (matchCount >= pattern.size()) {
+      if (!beginName) {
+        region.first = i + cursor;
+        beginName = true;
+      }
+      if (buffer[i] == '}') {
+        region.second = i + cursor;
+        break;
+      }
+    } else {
+      if (buffer[i] == pattern[matchCount]) {
+        matchCount++;
+      } else {
+        break;
+      }
+    }
+  }
+  return region;
+}
+bool isBeginLatex(RootElement *root, const char *buffer, const std::size_t size,
+                  const std::size_t offset, const std::size_t cursor) {
+  Region region = getLatexBeginName(root, buffer, size, offset, cursor);
+  return region.second > 0;
+}
+bool isEndLatex(RootElement *root, const char *buffer, const std::size_t size,
+                const std::size_t offset, const std::size_t cursor) {
+  Region region = getLatexEndName(root, buffer, size, offset, cursor);
+  return region.second > 0;
 }
 } // namespace orgcpp

@@ -18,6 +18,7 @@
 #include "element/property.h"
 #include "element/tag.h"
 #include "element/date.h"
+#include "element/latex.h"
 #include "element/root.h"
 #include "parser/headline-parser.h"
 #include "parser/listitem-parser.h"
@@ -30,6 +31,7 @@
 #include "parser/property-parser.h"
 #include "parser/tag-parser.h"
 #include "parser/date-parser.h"
+#include "parser/latex-parser.h"
 #include "parser/parser.h"
 
 namespace orgcpp {

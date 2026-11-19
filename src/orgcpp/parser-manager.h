@@ -1,18 +1,19 @@
 #pragma once
 
+#include "parser/parser-impl.h"
+#include "parser/parser.h"
 #include "parser/block-parser.h"
 #include "parser/drawer-parser.h"
 #include "parser/headline-parser.h"
 #include "parser/keyword-parser.h"
 #include "parser/link-parser.h"
 #include "parser/listitem-parser.h"
-#include "parser/parser-impl.h"
-#include "parser/parser.h"
 #include "parser/property-parser.h"
 #include "parser/table-parser.h"
 #include "parser/text-parser.h"
 #include "parser/tag-parser.h"
 #include "parser/date-parser.h"
+#include "parser/latex-parser.h"
 namespace orgcpp {
 class ParserManager {
 public:
@@ -36,5 +37,6 @@ private:
   PropertyParser _propertyParser;
   TagParser _tagParser;
   DateParser _dateParser;
+  LatexParser _latexParser;
 };
 } // namespace orgcpp
