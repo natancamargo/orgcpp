@@ -403,4 +403,58 @@ bool isBeginTag(RootElement *root, const char *buffer, const std::size_t size,
   Region region = getTagName(root, buffer, size, offset, cursor);
   return region.valid();
 }
+Region getDateValue(RootElement *root, const char *buffer, const std::size_t size,
+                  const std::size_t offset, const std::size_t cursor) {
+  bool begin = false;
+  Region region{root->getDocument()};
+  for (std::size_t i = offset; i < size; i++) {
+    if (buffer[i] == '\n') {
+      break;
+    }
+    if (buffer[i] == '<' && !begin) {
+      begin = true;
+      region.first = i + cursor + 1;      
+    }
+    if (buffer[i] == '>' && begin) {
+      region.second = i + cursor;      
+      break;
+    }
+  }
+  return region;
+}
+Region getDatePre(RootElement *root, const char *buffer, const std::size_t size,
+                  const std::size_t offset, const std::size_t cursor) {
+  Region region{root->getDocument()};
+  for (std::size_t i = offset; i < size; i++) {    
+    if (buffer[i] == '\n' || buffer[i] == '<') {
+      break;
+    }
+    if (i == offset) {
+      region.first = i + cursor;      
+    }
+    if (buffer[i] == ':') {
+      region.second = i + cursor;      
+      break;
+    }
+  }
+  return region;
+}
+bool isBeginDate(RootElement *root, const char *buffer, const std::size_t size,
+                  const std::size_t offset, const std::size_t cursor) {
+  bool begin = false, beginDate = false;
+  Region region{root->getDocument()};
+  for (std::size_t i = offset; i < size; i++) {
+    if (buffer[i] == '\n') {
+      break;
+    }
+    if (buffer[i] == '<' && !begin) {
+      begin = true;
+    }
+    if (buffer[i] == '>' && begin) {
+      beginDate = true;      
+      break;
+    }
+  }
+  return beginDate;
+}
 } // namespace orgcpp

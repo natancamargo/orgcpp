@@ -35,15 +35,14 @@ void TextParser::parse(RootElement *root, const char *buffer,
     lineBegin = beginFile || lastCharacter == '\n';
     indentation = lineBegin ? lineIndentation(buffer, size, i) : indentation;
     indentationChanged = (indentation != lastIndentation) && !beginFile;
-    mark =
-        lineBegin &&
-        (isBeginHeadline(buffer, size, i) || isBeginListitem(buffer, size, i) ||
-         charAfterSpaces == ':' || charAfterSpaces == '#' ||
-         charAfterSpaces == '|' || charAfterSpaces == '\\' ||
-         charAfterSpaces == '[' || charAfterSpaces == '<');
+    mark = lineBegin && (isBeginHeadline(buffer, size, i) ||
+                         isBeginListitem(buffer, size, i) ||
+                         charAfterSpaces == ':' || charAfterSpaces == '#' ||
+                         charAfterSpaces == '|' || charAfterSpaces == '\\' ||
+                         charAfterSpaces == '[' || charAfterSpaces == '<' ||
+                         isBeginDate(root, buffer, size, i, cursor));
 
-    begin =
-        (lineBegin && !mark && (!lastMiddle || indentationChanged));
+    begin = (lineBegin && !mark && (!lastMiddle || indentationChanged));
     middle = (lastMiddle && (!lastEnd || lastBegin)) || begin;
     end = lastMiddle && (mark || endFile || indentationChanged);
 

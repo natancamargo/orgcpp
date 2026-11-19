@@ -12,6 +12,7 @@
 #include "parser/table-parser.h"
 #include "parser/text-parser.h"
 #include "parser/tag-parser.h"
+#include "parser/date-parser.h"
 namespace orgcpp {
 class ParserManager {
 public:
@@ -34,5 +35,6 @@ private:
   TableParser _tableParser;
   PropertyParser _propertyParser;
   TagParser _tagParser;
+  DateParser _dateParser;
 };
 } // namespace orgcpp

@@ -1,0 +1,8 @@
+* Headline 1
+<2006-11-01 Wed 19:15>
+
+* Headline 2
+DEADLINE: <2006-11-01 Wed 19:15>
+
+* Headline 3
+SCHEDULED: <2006-11-01 Wed 19:15>

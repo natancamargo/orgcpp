@@ -119,11 +119,8 @@ void Element::print() {
     case Type::TAG:
       std::cout << "Tag" << std::endl;
       break;
-    case Type::DATES_TIMESTAMP:
-      std::cout << "DatesTimestamp" << std::endl;
-      break;
-    case Type::DATES_SCHEDULED:
-      std::cout << "DatesScheduled" << std::endl;
+    case Type::DATE:
+      std::cout << "Date" << std::endl;
       break;
     case Type::TEXT:
       std::cout << "Text" << std::endl;
