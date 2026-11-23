@@ -306,17 +306,6 @@ cmake --build build --target orgcpp-unit-tests
 ./build/orgcpp-unit-tests
 ```
 
-### Docs
-
-```shell
-cmake -S . -B build
-cmake --build build --target docs
-```
-
-> **Documentation:**
->
-> https://natancamargo.github.io/orgcpp/html
-
 ### Watch with Nodemon
 
 ```shell
