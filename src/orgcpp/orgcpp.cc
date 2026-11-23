@@ -20,6 +20,11 @@
 #include <vector>
 
 namespace orgcpp {
+bool initilized = []() {
+  std::cout << std::format("================\n{}@{}\n================\n",
+                           config::project_name, config::project_version);
+  return true;
+}();
 Error error = Error::NONE;
 RootElement *parse(std::string path) {
   error = Error::NONE;
@@ -30,15 +35,15 @@ RootElement *parse(std::string path) {
   RootElement *root = allocator::allocate<RootElement>();
 
   // todo: small and fixed blocksize
-  config::blockSize = std::filesystem::file_size(path) + 1;  
+  config::blockSize = std::filesystem::file_size(path) + 1;
 
   // root attributes
   root->setAttribute("head", "root");
   Region region{root->getDocument()};
   region.first = 0;
-  region.second = std::filesystem::file_size(path);  
+  region.second = std::filesystem::file_size(path);
   root->setAttribute("content", region);
-  
+
   // open file
   std::tuple<bool, std::shared_ptr<std::ifstream>> openFileResult =
       openFile(path);
@@ -103,7 +108,7 @@ bool readFileByBlocks(
     }
   } catch (const std::ifstream::failure &e) {
     std::cerr << std::format("Error: {}\nError code: {}\n", e.what(),
-                         e.code().value());
+                             e.code().value());
     return false;
   }
 

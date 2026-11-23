@@ -37,6 +37,7 @@
 #include "parser/parser.h"
 
 namespace orgcpp {
+extern bool initialized;
 enum class Error { NONE, PARSE_FILE_OPEN_ERROR };
 extern Error error;
 RootElement *parse(std::string path);
