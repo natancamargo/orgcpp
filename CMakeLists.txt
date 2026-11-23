@@ -83,17 +83,6 @@ add_library(${LIBRARY_NAME} STATIC
 target_link_libraries(${LIBRARY_NAME} PUBLIC)
 target_include_directories(${LIBRARY_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-# target executable
-# ----------------------------------------------------------------------------------------
-set(EXECUTABLE_NAME orgcpp-cli)
-add_executable(${EXECUTABLE_NAME}
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc"
-)
-target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${LIBRARY_NAME})
-set_target_properties(${EXECUTABLE_NAME} PROPERTIES
-RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
-set_property(TARGET ${EXECUTABLE_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>)
-
 # target tests
 # ----------------------------------------------------------------------------------------
 set(TEST_NAME "orgcpp-unit-tests")
