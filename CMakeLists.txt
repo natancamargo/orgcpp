@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(orgcpp VERSION 0.1.2)
+project(orgcpp VERSION 0.1.3)
 
 include(FetchContent)
 
@@ -120,11 +120,4 @@ target_include_directories(${LIBRARY_NAME} PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 add_custom_command(
   TARGET ${TEST_NAME} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/tests/resources ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}/resources
-)
-
-# install
-# ----------------------------------------------------------------------------------------
-install(DIRECTORY src/
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    FILES_MATCHING PATTERN "*.h"
 )

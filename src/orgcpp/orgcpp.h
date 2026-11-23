@@ -1,6 +1,5 @@
 #pragma once
 
-#include "config/config.h"
 #include <cstddef>
 #include <format>
 #include <string>
@@ -36,6 +35,7 @@
 #include "parser/latex-parser.h"
 #include "parser/footnote-parser.h"
 #include "parser/parser.h"
+#include "config/config.h"
 
 namespace orgcpp {
 inline bool initialized = []() {
