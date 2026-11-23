@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(orgcpp VERSION 0.1.1)
+project(orgcpp VERSION 0.1.2)
 
 include(FetchContent)
 

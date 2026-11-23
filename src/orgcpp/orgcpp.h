@@ -2,6 +2,7 @@
 
 #include "config/config.h"
 #include <cstddef>
+#include <format>
 #include <string>
 
 #include "attribute/attribute.h"
@@ -37,7 +38,11 @@
 #include "parser/parser.h"
 
 namespace orgcpp {
-extern bool initialized;
+inline bool initialized = []() {
+  std::cout << std::format("================\n{}@{}\n================\n",
+                           config::project_name, config::project_version);
+  return true;
+}();
 enum class Error { NONE, PARSE_FILE_OPEN_ERROR };
 extern Error error;
 RootElement *parse(std::string path);

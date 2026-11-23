@@ -20,11 +20,6 @@
 #include <vector>
 
 namespace orgcpp {
-bool initilized = []() {
-  std::cout << std::format("================\n{}@{}\n================\n",
-                           config::project_name, config::project_version);
-  return true;
-}();
 Error error = Error::NONE;
 RootElement *parse(std::string path) {
   error = Error::NONE;
