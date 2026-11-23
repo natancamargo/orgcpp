@@ -38,11 +38,6 @@
 #include "config/config.h"
 
 namespace orgcpp {
-inline bool initialized = []() {
-  std::cout << std::format("================\n{}@{}\n================\n",
-                           config::project_name, config::project_version);
-  return true;
-}();
 enum class Error { NONE, PARSE_FILE_OPEN_ERROR };
 extern Error error;
 RootElement *parse(std::string path);
