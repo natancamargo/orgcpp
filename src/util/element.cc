@@ -1,4 +1,5 @@
 #include "util/element.h"
+#include <algorithm>
 
 namespace orgcpp {
 std::string getHead(Element *element) {
@@ -8,7 +9,7 @@ std::string getHead(Element *element) {
   } else if (element->getAttribute<std::string>("head")) {
     head = *element->getAttribute<std::string>("head");
   }
-  head.erase(std::remove(head.begin(), head.end(), '\n'), head.cend());
+  head.erase(std::remove(head.begin(), head.end(), '\n'), head.end());
   return head;
 }
 } // namespace orgcpp

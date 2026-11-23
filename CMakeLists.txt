@@ -112,6 +112,7 @@ add_executable(${TEST_NAME}
   "${CMAKE_CURRENT_SOURCE_DIR}/tests/date.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/tests/latex.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/tests/footnote.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/tests/find.cc"
 )
 target_link_libraries(${TEST_NAME} PUBLIC ${LIBRARY_NAME} Catch2::Catch2WithMain)
 set_target_properties(${TEST_NAME} PROPERTIES

@@ -1,4 +1,0 @@
-#+PRIORITIES: A C B
-
-* [#A] Headline
-Text

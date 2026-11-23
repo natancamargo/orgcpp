@@ -5,12 +5,12 @@
 #include <memory>
 
 namespace orgcpp {
-Element *Element::findOneByType(Type type) {
-  Element *element;
-  traverse([&element, &type](Element *_element) {
+Element *Element::findOne(FindFunction find) {
+  Element *element = nullptr;
+  traverse([&element, &find](Element *_element) {
     if (element) {
-      return false;
-    } else if (type == _element->getType()) {
+      return false;      
+    } else if (find(_element)) {
       element = _element;
       return false;
     }
@@ -18,12 +18,11 @@ Element *Element::findOneByType(Type type) {
   });
   return element;
 }
-std::vector<Element *> Element::findAllByType(Type type) {
+std::vector<Element *> Element::findAll(FindFunction find) {
   std::vector<Element *> elements;
-  traverse([&elements, &type](Element *_element) {
-    if (type == _element->getType()) {
+  traverse([&elements, &find](Element *_element) {
+    if (find(_element)) {
       elements.push_back(_element);
-      return false;
     }
     return true;
   });
@@ -53,11 +52,12 @@ void Element::traverse(TraverseFunction traverseFunc) {
   traverse(this, traverseFunc);
 }
 void Element::traverse(Element *element, TraverseFunction traverseFunc) {
-  std::vector<Element *> elements = element->getChildren();
+  if (!traverseFunc(element)) {
+    return;
+  }
+  std::vector<Element *> &elements = element->getChildren();
   for (Element *_element : elements) {
-    if (!traverseFunc(_element)) {
-      return;
-    }
+    traverse(_element, traverseFunc);
   }
 }
 

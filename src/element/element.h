@@ -23,11 +23,12 @@ enum class Type {
 class Element {
 public:
   using TraverseFunction = std::function<bool(Element *_element)>;
+  using FindFunction = std::function<bool(Element *_element)>;
 
   virtual ~Element() = default;
 
-  Element *findOneByType(Type type);
-  std::vector<Element *> findAllByType(Type type);
+  Element *findOne(FindFunction findFunction);
+  std::vector<Element *> findAll(FindFunction findFunction);
 
   const std::map<std::string, Attribute> &getAttributes() const;
   void setAttribute(const std::string &name, const AttributeValue &value);

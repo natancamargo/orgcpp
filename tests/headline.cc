@@ -117,7 +117,7 @@ TEST_CASE("headline parsing should work properly", "[orgcpp][headline]") {
   }
   SECTION("when parsing a checkbox headline", "[checkbox]") {
     RootElement *root =
-      orgcpp::parse("./resources/01-headline/07-checkbox-headline.org");
+      orgcpp::parse("./resources/01-headline/05-checkbox-headline.org");
     Headline *headline1 = root->get<Headline>(0);
     Headline *headline2 = root->get<Headline>(1);
     

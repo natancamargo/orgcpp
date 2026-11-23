@@ -239,6 +239,21 @@ RootElement *root = orgcpp::parse("./path/to/org/file");
 root->print();
 ```
 
+#### Finding
+orgcpp allows to find-traverse the ast of an org-mode file using a
+condition. It can obtain one or all elements, example:
+```c++
+  // Find one listitem by type
+  Listitem *listitem = dynamic_cast<Listitem *>(root->findOne(
+      [](Element *element) { return element->getType() == Type::LISTITEM; }));
+  assert(listitem);
+  // Find all elements by type
+  std::vector<Element *> listitems = root->findAll([](Element *element) {
+        return element->getType() == Type::LISTITEM;
+      });
+  assert(listitems.size() == 4);
+```
+
 ### Build
 
 #### Install VCPKG
