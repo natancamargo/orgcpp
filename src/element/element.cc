@@ -131,6 +131,9 @@ void Element::print() {
     case Type::FOOTNOTE:
       std::cout << "Footnote" << std::endl;
       break;
+    case Type::KEYWORD:
+      std::cout << "Keyword" << std::endl;
+      break;      
     default:
       std::cout << "Unkown" << std::endl;
       break;
